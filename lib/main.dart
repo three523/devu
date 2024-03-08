@@ -2,8 +2,13 @@ import 'dart:ui';
 import 'package:devu/widget/monthViewWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:calendar_view/calendar_view.dart';
+import 'package:hive/hive.dart';
+import 'dart:io';
 
-void main() {
+import 'package:hive_flutter/hive_flutter.dart';
+
+Future<void> main() async {
+  await Hive.initFlutter();
   runApp(const MyApp());
 }
 

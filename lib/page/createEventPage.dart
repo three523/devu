@@ -25,28 +25,31 @@ class CreateEventPage extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: EventForm(
-            event: event,
-            date: date,
-            onEventAdd: (newEvent) {
-              if (event != null) {
+              event: event,
+              date: date,
+              onEventAdd: (newEvent) {
+                if (event != null) {
+                  CalendarControllerProvider.of(context)
+                      .controller
+                      .update(event!, newEvent);
+                } else {
+                  CalendarControllerProvider.of(context)
+                      .controller
+                      .add(newEvent);
+                }
+                onEventAdd?.call(newEvent);
+                context.pop(true);
+              },
+              onEventRemove: () {
+                if (event == null) {
+                  return;
+                }
                 CalendarControllerProvider.of(context)
                     .controller
-                    .update(event!, newEvent);
-              } else {
-                CalendarControllerProvider.of(context).controller.add(newEvent);
-              }
-              onEventAdd?.call(newEvent);
-              context.pop(true);
-            },
-            onEventRemove: () {
-              if (event == null) {
-                return;
-              }
-              CalendarControllerProvider.of(context).controller.remove(event!);
-              onEventRemove?.call();
-              context.pop(true);
-            },
-          ),
+                    .remove(event!);
+                onEventRemove?.call();
+                context.pop(true);
+              }),
         ),
       ),
     );
