@@ -84,12 +84,6 @@ class _DateTimeSelectorFormFieldState extends State<DateTimeSelectorFormField> {
   FocusNode _getFocusNode() {
     final node = widget.focusNode ?? FocusNode();
 
-    // node.addListener(() {
-    //   if (node.hasFocus) {
-    //     _showSelector();
-    //   }
-    // });
-
     return node;
   }
 

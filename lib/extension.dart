@@ -1,5 +1,8 @@
+import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import 'domain/event.dart';
 
 enum TimeStampFormat { parse_12, parse_24 }
 
@@ -129,4 +132,9 @@ extension DateUtils on DateTime {
 
 extension StringExt on String {
   String get capitalized => toBeginningOfSentenceCase(this) ?? "";
+}
+
+extension EventDataExtension on CalendarEventData {
+  Event toEvent() =>
+      Event(id: id, price: price, date: date, type: type.toString());
 }

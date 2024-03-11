@@ -1,14 +1,16 @@
 import 'dart:ui';
-import 'package:devu/widget/monthViewWidget.dart';
+import 'package:devu/domain/event.dart';
+import 'package:devu/domain/event_repository.dart';
+import 'package:devu/widget/month_view_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:calendar_view/calendar_view.dart';
-import 'package:hive/hive.dart';
-import 'dart:io';
-
 import 'package:hive_flutter/hive_flutter.dart';
 
 Future<void> main() async {
   await Hive.initFlutter();
+  Hive.registerAdapter(EventAdapter());
+  await EventRepository.openBox();
+
   runApp(const MyApp());
 }
 
@@ -18,8 +20,10 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final List<CalendarEventData> events =
+        EventRepository.getAll().map((e) => e.toCalendarEventData()).toList();
     return CalendarControllerProvider(
-      controller: EventController()..addAll(_events),
+      controller: EventController()..addAll(events),
       child: MaterialApp(
           title: 'Flutter Demo',
           theme: ThemeData(
@@ -51,53 +55,3 @@ class MainPage extends StatelessWidget {
     );
   }
 }
-
-DateTime get _now => DateTime.now();
-List<CalendarEventData> _events = [
-  CalendarEventData(
-    date: _now,
-    price: 8000,
-    type: EventType.expenses,
-    description: "Today is project meeting.",
-  ),
-  CalendarEventData(
-    date: _now.add(Duration(days: 1)),
-    price: 10000,
-    type: EventType.expenses,
-    description: "Attend uncle's wedding anniversary.",
-  ),
-  CalendarEventData(
-    date: _now,
-    price: 6000,
-    type: EventType.income,
-    description: "Go to football tournament.",
-  ),
-  CalendarEventData(
-    date: _now.add(Duration(days: 3)),
-    price: 6000,
-    type: EventType.income,
-    description: "Last day of project submission for last year.",
-  ),
-  CalendarEventData(
-    date: _now.subtract(Duration(days: 2)),
-    startTime: DateTime(
-        _now.subtract(Duration(days: 2)).year,
-        _now.subtract(Duration(days: 2)).month,
-        _now.subtract(Duration(days: 2)).day,
-        14),
-    price: 6000,
-    type: EventType.income,
-    description: "Team Meeting",
-  ),
-  CalendarEventData(
-    date: _now.subtract(Duration(days: 2)),
-    startTime: DateTime(
-        _now.subtract(Duration(days: 2)).year,
-        _now.subtract(Duration(days: 2)).month,
-        _now.subtract(Duration(days: 2)).day,
-        10),
-    price: 15000,
-    type: EventType.income,
-    description: "Today is Joe's birthday.",
-  ),
-];

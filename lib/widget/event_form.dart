@@ -1,11 +1,12 @@
 import 'package:calendar_view/calendar_view.dart';
 import 'package:devu/extension.dart';
-import 'package:devu/widget/dateTimeSelector.dart';
+import 'package:devu/widget/date_time_selector.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:uuid/uuid.dart';
 
 class EventForm extends StatefulWidget {
   final void Function(CalendarEventData)? onEventAdd;
@@ -42,11 +43,17 @@ class _EventFormState extends State<EventForm> {
   String previousValue = '0';
   String currntValue = '0';
 
-  List<bool> isSelectedButtons = [true, false];
-  EventType type = EventType.income;
+  List<bool> isSelectedButtons = [false, false];
+  late EventType type = widget.event?.type ?? EventType.income;
 
   @override
   Widget build(BuildContext context) {
+    if (type == EventType.income) {
+      isSelectedButtons[0] = true;
+    } else {
+      isSelectedButtons[1] = true;
+    }
+
     return Form(
       key: form,
       child: Column(
@@ -169,6 +176,7 @@ class _EventFormState extends State<EventForm> {
     }
 
     final event = CalendarEventData(
+        id: widget.event == null ? const Uuid().v4() : widget.event!.id,
         price: titleController.text.trim().toPrice(),
         type: type,
         date: eventDate,
@@ -177,7 +185,6 @@ class _EventFormState extends State<EventForm> {
         titleStyle: TextStyle(
           color: type == EventType.income ? Colors.blue : Colors.red,
         ));
-
     widget.onEventAdd?.call(event);
   }
 
