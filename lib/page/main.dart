@@ -1,16 +1,17 @@
-import 'dart:ffi';
-
 import 'package:devu_app/EventRepository.dart';
 import 'package:devu_app/event.dart';
+import 'package:devu_app/page/create_event_page.dart';
 import 'package:devu_app/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 Future<void> main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(EventAdapter());
-  await Hive.openBox<Map<DateTime, List<Event>>>('events');
+  await Hive.deleteBoxFromDisk('events');
+  await Hive.openBox<Map<int, List<Event>>>('events');
   runApp(const MyApp());
 }
 
@@ -20,23 +21,26 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    return RepositoryProvider(
+      create: (context) => EventRepository(),
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        home: CalendartPage(),
       ),
-      home: TableEventsExample(),
     );
   }
 }
 
-class TableEventsExample extends StatefulWidget {
+class CalendartPage extends StatefulWidget {
   @override
-  _TableEventsExampleState createState() => _TableEventsExampleState();
+  _CalendartPageState createState() => _CalendartPageState();
 }
 
-class _TableEventsExampleState extends State<TableEventsExample> {
+class _CalendartPageState extends State<CalendartPage> {
   late final ValueNotifier<List<Event>> _selectedEvents;
   CalendarFormat _calendarFormat = CalendarFormat.month;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
@@ -45,7 +49,6 @@ class _TableEventsExampleState extends State<TableEventsExample> {
   DateTime? _selectedDay;
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
-  EventRepository eventRepository = EventRepository();
 
   @override
   void initState() {
@@ -62,7 +65,7 @@ class _TableEventsExampleState extends State<TableEventsExample> {
 
   List<Event> _getEventsForDay(DateTime day) {
     // Implementation example
-    return eventRepository.getEventsByDate(day);
+    return RepositoryProvider.of<EventRepository>(context).getEventsByDate(day);
   }
 
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
@@ -102,7 +105,13 @@ class _TableEventsExampleState extends State<TableEventsExample> {
         title: Text('TableCalendar - Events'),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Void,
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      CreateEventPage(date: _selectedDay ?? DateTime.now())));
+        },
         child: Icon(Icons.add),
       ),
       body: Column(
