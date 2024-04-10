@@ -2,6 +2,7 @@
 // Use of this source code is governed by a MIT-style license
 // that can be found in the LICENSE file.
 
+import 'package:devu_app/data/repository/expense_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -103,3 +104,16 @@ extension PriceExtension on int {
     return format.format(this);
   }
 }
+
+// extension KendExtension on Kind {
+//   String to() {
+//     switch (this) {
+//       case Kind.category:
+//         return 'category';
+//       case Kind.label:
+//         return 'label';
+//       default:
+//         throw Exception('알 수 없는 타입');
+//     }
+//   }
+// }
