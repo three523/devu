@@ -11,11 +11,16 @@ class EventForm extends StatefulWidget {
   final Expense? event;
   final DateTime date;
 
+  final List<String> labels;
+  final List<String> categorys;
+
   const EventForm({
     super.key,
     this.onEventAdd,
     this.onEventDelete,
     this.event,
+    required this.labels,
+    required this.categorys,
     required this.date,
   });
 
@@ -40,9 +45,6 @@ class _EventFormState extends State<EventForm> {
   List<bool> isSelectedButtons = [false, false];
   late String selectedCategory =
       widget.event == null ? '취미/여가' : widget.event!.eventCategory;
-
-  List<String> labels = ['A', 'B', 'C', 'D'];
-  List<String> categorys = ['취미/여가', '음식', '교통비', '숙박'];
   List<Color> categoryColors = [
     Colors.orangeAccent,
     Colors.greenAccent,
@@ -118,13 +120,13 @@ class _EventFormState extends State<EventForm> {
             shrinkWrap: true,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 5, mainAxisSpacing: 5.0, crossAxisSpacing: 5.0),
-            itemCount: categorys.length,
+            itemCount: widget.categorys.length,
             itemBuilder: (context, index) {
               return Container(
                 child: TextButton(
-                  child: Text(categorys[index]),
+                  child: Text(widget.categorys[index]),
                   onPressed: () {
-                    selectedCategory = categorys[index];
+                    selectedCategory = widget.categorys[index];
                   },
                 ),
                 color: categoryColors[index],
@@ -136,16 +138,16 @@ class _EventFormState extends State<EventForm> {
             shrinkWrap: true,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 5, crossAxisSpacing: 5.0, mainAxisSpacing: 5.0),
-            itemCount: labels.length,
+            itemCount: widget.labels.length,
             itemBuilder: (context, index) {
               return Container(
                 child: TextButton(
-                  child: Text(labels[index]),
+                  child: Text(widget.labels[index]),
                   onPressed: () {
-                    if (selectedLabels.contains(labels[index])) {
-                      selectedLabels.remove(labels[index]);
+                    if (selectedLabels.contains(widget.labels[index])) {
+                      selectedLabels.remove(widget.labels[index]);
                     } else {
-                      selectedLabels.add(labels[index]);
+                      selectedLabels.add(widget.labels[index]);
                     }
                   },
                 ),

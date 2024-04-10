@@ -1,12 +1,10 @@
+import 'package:devu_app/data/model/filter_data.dart';
 import 'package:devu_app/data/model/day_expense.dart';
 import 'package:devu_app/data/model/expense.dart';
 import 'package:devu_app/data/repository/expense_repository.dart';
-import 'package:devu_app/expense_bloc.dart';
-import 'package:devu_app/extenstion.dart';
 import 'package:devu_app/page/create_event_page.dart';
 import 'package:devu_app/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -14,8 +12,10 @@ Future<void> main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(DayExpenseAdapter());
   Hive.registerAdapter(ExpenseAdapter());
+  Hive.registerAdapter(FilterDataAdapter());
   // await Hive.deleteBoxFromDisk('expense');
   await Hive.openBox<DayExpense>('expense');
+  await Hive.openBox<FilterData>('filter');
   runApp(const MyApp());
 }
 

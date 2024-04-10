@@ -31,6 +31,8 @@ class CreateEventPage extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: EventForm(
+              categorys: repository.getAllCategory(FilterType.category),
+              labels: repository.getAllCategory(FilterType.label),
               event: event,
               date: date,
               onEventAdd: (newEvent) async {
