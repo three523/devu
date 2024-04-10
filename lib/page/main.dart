@@ -168,7 +168,21 @@ class _CalendartPageState extends State<CalendartPage> {
                         borderRadius: BorderRadius.circular(12.0),
                       ),
                       child: ListTile(
-                        onTap: () => print('${value[index].price}'),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CreateEventPage(
+                                repository: widget.repository,
+                                date: _selectedDay ?? DateTime.now(),
+                                event: value[index],
+                                onEventAdd: updateUI,
+                                onEventDelete: updateUI,
+                                onEventUpdate: updateUI,
+                              ),
+                            ),
+                          );
+                        },
                         title: Text('${value[index].price}'),
                       ),
                     );
