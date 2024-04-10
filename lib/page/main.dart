@@ -1,16 +1,21 @@
-import 'dart:ffi';
-
-import 'package:devu_app/EventRepository.dart';
-import 'package:devu_app/event.dart';
+import 'package:devu_app/data/model/day_expense.dart';
+import 'package:devu_app/data/model/expense.dart';
+import 'package:devu_app/data/repository/expense_repository.dart';
+import 'package:devu_app/expense_bloc.dart';
+import 'package:devu_app/extenstion.dart';
+import 'package:devu_app/page/create_event_page.dart';
 import 'package:devu_app/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 Future<void> main() async {
   await Hive.initFlutter();
-  Hive.registerAdapter(EventAdapter());
-  await Hive.openBox<Map<DateTime, List<Event>>>('events');
+  Hive.registerAdapter(DayExpenseAdapter());
+  Hive.registerAdapter(ExpenseAdapter());
+  // await Hive.deleteBoxFromDisk('expense');
+  await Hive.openBox<DayExpense>('expense');
   runApp(const MyApp());
 }
 
@@ -21,23 +26,24 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: TableEventsExample(),
-    );
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        home: CalendartPage(ExpenseRepository()));
   }
 }
 
-class TableEventsExample extends StatefulWidget {
+class CalendartPage extends StatefulWidget {
+  final ExpenseRepository repository;
+  CalendartPage(this.repository);
   @override
-  _TableEventsExampleState createState() => _TableEventsExampleState();
+  _CalendartPageState createState() => _CalendartPageState();
 }
 
-class _TableEventsExampleState extends State<TableEventsExample> {
-  late final ValueNotifier<List<Event>> _selectedEvents;
+class _CalendartPageState extends State<CalendartPage> {
+  late final ValueNotifier<List<Expense>> _selectedEvents;
   CalendarFormat _calendarFormat = CalendarFormat.month;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
       .toggledOff; // Can be toggled on/off by longpressing a date
@@ -45,7 +51,6 @@ class _TableEventsExampleState extends State<TableEventsExample> {
   DateTime? _selectedDay;
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
-  EventRepository eventRepository = EventRepository();
 
   @override
   void initState() {
@@ -60,9 +65,9 @@ class _TableEventsExampleState extends State<TableEventsExample> {
     super.dispose();
   }
 
-  List<Event> _getEventsForDay(DateTime day) {
+  List<Expense> _getEventsForDay(DateTime day) {
     // Implementation example
-    return eventRepository.getEventsByDate(day);
+    return widget.repository.getExpensesByDate(day);
   }
 
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
@@ -95,6 +100,10 @@ class _TableEventsExampleState extends State<TableEventsExample> {
     }
   }
 
+  void updateUI() {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,12 +111,25 @@ class _TableEventsExampleState extends State<TableEventsExample> {
         title: Text('TableCalendar - Events'),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Void,
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CreateEventPage(
+                repository: widget.repository,
+                date: _selectedDay ?? DateTime.now(),
+                onEventAdd: updateUI,
+                onEventDelete: updateUI,
+                onEventUpdate: updateUI,
+              ),
+            ),
+          );
+        },
         child: Icon(Icons.add),
       ),
       body: Column(
         children: [
-          TableCalendar<Event>(
+          TableCalendar<Expense>(
             headerStyle: const HeaderStyle(
               formatButtonVisible: false,
               titleCentered: true,
@@ -130,7 +152,7 @@ class _TableEventsExampleState extends State<TableEventsExample> {
           ),
           const SizedBox(height: 8.0),
           Expanded(
-            child: ValueListenableBuilder<List<Event>>(
+            child: ValueListenableBuilder<List<Expense>>(
               valueListenable: _selectedEvents,
               builder: (context, value, _) {
                 return ListView.builder(
@@ -146,7 +168,21 @@ class _TableEventsExampleState extends State<TableEventsExample> {
                         borderRadius: BorderRadius.circular(12.0),
                       ),
                       child: ListTile(
-                        onTap: () => print('${value[index].price}'),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CreateEventPage(
+                                repository: widget.repository,
+                                date: _selectedDay ?? DateTime.now(),
+                                event: value[index],
+                                onEventAdd: updateUI,
+                                onEventDelete: updateUI,
+                                onEventUpdate: updateUI,
+                              ),
+                            ),
+                          );
+                        },
                         title: Text('${value[index].price}'),
                       ),
                     );

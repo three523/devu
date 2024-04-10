@@ -1,38 +1,35 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'budget.dart';
+part of 'day_expense.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class BudgetAdapter extends TypeAdapter<Budget> {
+class DayExpenseAdapter extends TypeAdapter<DayExpense> {
   @override
-  final int typeId = 0;
+  final int typeId = 1;
 
   @override
-  Budget read(BinaryReader reader) {
+  DayExpense read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Budget(
-      id: fields[0] as String,
-      price: fields[1] as int,
-      date: fields[2] as DateTime,
+    return DayExpense(
+      timeStamp: fields[0] as int,
+      expenseList: (fields[1] as List).cast<Expense>(),
     );
   }
 
   @override
-  void write(BinaryWriter writer, Budget obj) {
+  void write(BinaryWriter writer, DayExpense obj) {
     writer
-      ..writeByte(3)
-      ..writeByte(0)
-      ..write(obj.id)
-      ..writeByte(1)
-      ..write(obj.price)
       ..writeByte(2)
-      ..write(obj.date);
+      ..writeByte(0)
+      ..write(obj.timeStamp)
+      ..writeByte(1)
+      ..write(obj.expenseList);
   }
 
   @override
@@ -41,7 +38,7 @@ class BudgetAdapter extends TypeAdapter<Budget> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is BudgetAdapter &&
+      other is DayExpenseAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

@@ -1,10 +1,10 @@
 import 'package:hive/hive.dart';
 
-part 'event.g.dart';
+part 'expense.g.dart';
 
 @HiveType(typeId: 0)
-class Event {
-  Event({
+class Expense {
+  Expense({
     required this.id,
     required this.price,
     required this.date,
