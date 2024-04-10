@@ -1,5 +1,8 @@
-import 'package:devu_app/EventRepository.dart';
-import 'package:devu_app/event.dart';
+import 'package:devu_app/data/model/day_expense.dart';
+import 'package:devu_app/data/model/expense.dart';
+import 'package:devu_app/data/repository/expense_repository.dart';
+import 'package:devu_app/expense_bloc.dart';
+import 'package:devu_app/extenstion.dart';
 import 'package:devu_app/page/create_event_page.dart';
 import 'package:devu_app/utils.dart';
 import 'package:flutter/material.dart';
@@ -9,9 +12,10 @@ import 'package:table_calendar/table_calendar.dart';
 
 Future<void> main() async {
   await Hive.initFlutter();
-  Hive.registerAdapter(EventAdapter());
-  await Hive.deleteBoxFromDisk('events');
-  await Hive.openBox<Map<int, List<Event>>>('events');
+  Hive.registerAdapter(DayExpenseAdapter());
+  Hive.registerAdapter(ExpenseAdapter());
+  // await Hive.deleteBoxFromDisk('expense');
+  await Hive.openBox<DayExpense>('expense');
   runApp(const MyApp());
 }
 
@@ -21,27 +25,25 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider(
-      create: (context) => EventRepository(),
-      child: MaterialApp(
+    return MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: CalendartPage(),
-      ),
-    );
+        home: CalendartPage(ExpenseRepository()));
   }
 }
 
 class CalendartPage extends StatefulWidget {
+  final ExpenseRepository repository;
+  CalendartPage(this.repository);
   @override
   _CalendartPageState createState() => _CalendartPageState();
 }
 
 class _CalendartPageState extends State<CalendartPage> {
-  late final ValueNotifier<List<Event>> _selectedEvents;
+  late final ValueNotifier<List<Expense>> _selectedEvents;
   CalendarFormat _calendarFormat = CalendarFormat.month;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
       .toggledOff; // Can be toggled on/off by longpressing a date
@@ -63,9 +65,9 @@ class _CalendartPageState extends State<CalendartPage> {
     super.dispose();
   }
 
-  List<Event> _getEventsForDay(DateTime day) {
+  List<Expense> _getEventsForDay(DateTime day) {
     // Implementation example
-    return RepositoryProvider.of<EventRepository>(context).getEventsByDate(day);
+    return widget.repository.getExpensesByDate(day);
   }
 
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
@@ -98,6 +100,10 @@ class _CalendartPageState extends State<CalendartPage> {
     }
   }
 
+  void updateUI() {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,16 +113,23 @@ class _CalendartPageState extends State<CalendartPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      CreateEventPage(date: _selectedDay ?? DateTime.now())));
+            context,
+            MaterialPageRoute(
+              builder: (context) => CreateEventPage(
+                repository: widget.repository,
+                date: _selectedDay ?? DateTime.now(),
+                onEventAdd: updateUI,
+                onEventDelete: updateUI,
+                onEventUpdate: updateUI,
+              ),
+            ),
+          );
         },
         child: Icon(Icons.add),
       ),
       body: Column(
         children: [
-          TableCalendar<Event>(
+          TableCalendar<Expense>(
             headerStyle: const HeaderStyle(
               formatButtonVisible: false,
               titleCentered: true,
@@ -139,7 +152,7 @@ class _CalendartPageState extends State<CalendartPage> {
           ),
           const SizedBox(height: 8.0),
           Expanded(
-            child: ValueListenableBuilder<List<Event>>(
+            child: ValueListenableBuilder<List<Expense>>(
               valueListenable: _selectedEvents,
               builder: (context, value, _) {
                 return ListView.builder(

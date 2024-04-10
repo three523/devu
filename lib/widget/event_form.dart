@@ -1,20 +1,20 @@
-import 'package:devu_app/event.dart';
+import 'package:devu_app/data/model/expense.dart';
 import 'package:devu_app/extenstion.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:uuid/uuid.dart';
 
 class EventForm extends StatefulWidget {
-  final void Function(Event)? onEventAdd;
-  final void Function()? onEventRemove;
+  final void Function(Expense)? onEventAdd;
+  final void Function()? onEventDelete;
 
-  final Event? event;
+  final Expense? event;
   final DateTime date;
 
   const EventForm({
     super.key,
     this.onEventAdd,
-    this.onEventRemove,
+    this.onEventDelete,
     this.event,
     required this.date,
   });
@@ -180,7 +180,7 @@ class _EventFormState extends State<EventForm> {
       return form.currentState?.save();
     }
 
-    final event = Event(
+    final event = Expense(
         id: widget.event == null ? const Uuid().v4() : widget.event!.id,
         price: titleController.text.trim().toPrice(),
         date: eventDate,
@@ -191,6 +191,6 @@ class _EventFormState extends State<EventForm> {
   }
 
   void removeEvent() {
-    widget.onEventRemove?.call();
+    widget.onEventDelete?.call();
   }
 }

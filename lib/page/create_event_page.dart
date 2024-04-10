@@ -1,25 +1,28 @@
-import 'package:devu_app/EventRepository.dart';
-import 'package:devu_app/event.dart';
+import 'package:devu_app/data/model/expense.dart';
+import 'package:devu_app/data/repository/expense_repository.dart';
 import 'package:devu_app/widget/event_form.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CreateEventPage extends StatelessWidget {
-  final Event? event;
+  final ExpenseRepository repository;
+  final Expense? event;
   final DateTime date;
-  final void Function(Event)? onEventAdd;
-  final void Function()? onEventRemove;
+  final void Function()? onEventAdd;
+  final void Function()? onEventUpdate;
+  final void Function()? onEventDelete;
 
   const CreateEventPage(
       {super.key,
+      required this.repository,
       this.event,
       required this.date,
       this.onEventAdd,
-      this.onEventRemove});
+      this.onEventUpdate,
+      this.onEventDelete});
 
   @override
   Widget build(BuildContext context) {
-    final repository = RepositoryProvider.of<EventRepository>(context);
+    // final repository = context.read<ExpenseRepository>();
     return Scaffold(
       appBar: AppBar(
           title: event == null ? const Text('새로운 예산') : const Text("현재 예산")),
@@ -32,17 +35,26 @@ class CreateEventPage extends StatelessWidget {
               date: date,
               onEventAdd: (newEvent) async {
                 if (event != null) {
-                  repository.updateEvent(date, event!.id, newEvent);
+                  repository.updateExpense(date, event!.id, newEvent);
+                  if (onEventUpdate != null) {
+                    onEventUpdate!();
+                  }
                 } else {
-                  repository.createEvent(date, newEvent);
+                  repository.createExpense(date, newEvent);
+                  if (onEventAdd != null) {
+                    onEventAdd!();
+                  }
                 }
                 Navigator.of(context).pop(true);
               },
-              onEventRemove: () async {
+              onEventDelete: () async {
                 if (event == null) {
                   return;
                 }
-                repository.deleteEvent(date, event!.id);
+                repository.deleteExpense(date, event!.id);
+                if (onEventDelete != null) {
+                  onEventDelete!();
+                }
                 Navigator.of(context).pop(true);
               }),
         ),
