@@ -52,8 +52,6 @@ class _EventFormState extends State<EventForm> {
     Colors.redAccent
   ];
 
-  // List<EventCategory> categorys = CategoryRepository.getAll();
-
   List<String> selectedLabels = [];
 
   @override
