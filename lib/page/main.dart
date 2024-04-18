@@ -3,6 +3,8 @@ import 'package:devu_app/data/model/day_expense.dart';
 import 'package:devu_app/data/model/expense.dart';
 import 'package:devu_app/data/repository/expense_repository.dart';
 import 'package:devu_app/page/create_event_page.dart';
+import 'package:devu_app/page/main_page.dart';
+import 'package:devu_app/page/navigationbar_page.dart';
 import 'package:devu_app/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -31,7 +33,8 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: CalendartPage(ExpenseRepository()));
+        // home: CalendartPage(ExpenseRepository()));
+        home: NavigationBarPage());
   }
 }
 
