@@ -1,4 +1,6 @@
 import 'package:devu_app/data/resource.dart';
+import 'package:devu_app/page/add_category_page.dart';
+import 'package:devu_app/page/add_expenses_page.dart';
 import 'package:devu_app/widget/category_card.dart';
 import 'package:devu_app/widget/home_appbar.dart';
 import 'package:devu_app/widget/income_card.dart';
@@ -24,7 +26,10 @@ class _MainPageState extends State<MainPage> {
         backgroundColor: primaryColor,
         foregroundColor: Colors.white,
         shape: CircleBorder(),
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => AddExpenses()));
+        },
         child: Icon(Icons.add),
       ),
       body: SafeArea(
@@ -33,7 +38,7 @@ class _MainPageState extends State<MainPage> {
             Padding(
               padding:
                   const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
-              child: HomeAppBar(),
+              child: HomeAppBar('/addCategory'),
             ),
             SizedBox(
               width: double.infinity,
@@ -48,7 +53,7 @@ class _MainPageState extends State<MainPage> {
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: CategoryCard(),
+                      child: CategoryCard(25.0, CardType.view),
                     );
                   }),
             ),

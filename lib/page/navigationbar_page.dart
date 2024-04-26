@@ -1,4 +1,6 @@
 import 'package:devu_app/data/resource.dart';
+import 'package:devu_app/page/add_category_page.dart';
+import 'package:devu_app/page/add_expenses_page.dart';
 import 'package:devu_app/page/asset_page.dart';
 import 'package:devu_app/page/main_page.dart';
 import 'package:devu_app/page/setting_page.dart';
@@ -20,18 +22,26 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _widgetOptions.elementAt(_selectedIndex),
-      bottomNavigationBar: BottomNavigationBar(
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.attach_money), label: 'Asset'),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Setting'),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: primaryColor,
-        onTap: onItemTapped,
+    return MaterialApp(
+      initialRoute: '/',
+      routes: {
+        '/addCategory': (context) => AddCategory(),
+        '/addExpenses': (context) => AddExpenses(),
+      },
+      home: Scaffold(
+        body: _widgetOptions.elementAt(_selectedIndex),
+        bottomNavigationBar: BottomNavigationBar(
+          items: <BottomNavigationBarItem>[
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.attach_money), label: 'Asset'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.settings), label: 'Setting'),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: primaryColor,
+          onTap: onItemTapped,
+        ),
       ),
     );
   }

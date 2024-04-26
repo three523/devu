@@ -89,7 +89,33 @@ extension IntExtension on int {
 
 // 9,000 같이 숫자 구분을 위해 쉼표가 되어있는 경우 사용
 extension StringExtension on String {
-  int toPrice() => int.parse(replaceAll(",", ""));
+  int? toPrice() {
+    final maxValue = "9,223,372,036,854,775,807";
+    if (length > maxValue.length) {
+      return null;
+    }
+    final str = removeFrontZero(this);
+    return int.parse(str.replaceAll(",", ""));
+  }
+
+  String removeFrontZero(String string) {
+    if (string.length == 1) {
+      return string;
+    }
+    int startIndex = 0;
+    for (int i = 0; i < string.length; i++) {
+      if (string[i] == "0") {
+        startIndex += 1;
+        continue;
+      }
+      break;
+    }
+    if (startIndex == string.length) {
+      return "0";
+    }
+    return string.substring(startIndex);
+  }
+
   String toPriceString() {
     var num = int.parse(this);
     var format = NumberFormat('#,###');
@@ -104,16 +130,3 @@ extension PriceExtension on int {
     return format.format(this);
   }
 }
-
-// extension KendExtension on Kind {
-//   String to() {
-//     switch (this) {
-//       case Kind.category:
-//         return 'category';
-//       case Kind.label:
-//         return 'label';
-//       default:
-//         throw Exception('알 수 없는 타입');
-//     }
-//   }
-// }

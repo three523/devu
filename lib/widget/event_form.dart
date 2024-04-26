@@ -1,5 +1,5 @@
 import 'package:devu_app/data/model/expense.dart';
-import 'package:devu_app/extenstion.dart';
+import 'package:devu_app/utils/extenstion.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:uuid/uuid.dart';
@@ -182,7 +182,7 @@ class _EventFormState extends State<EventForm> {
 
     final event = Expense(
         id: widget.event == null ? const Uuid().v4() : widget.event!.id,
-        price: titleController.text.trim().toPrice(),
+        price: titleController.text.trim().toPrice() ?? 0,
         date: eventDate,
         eventCategory: selectedCategory,
         labels: selectedLabels,
