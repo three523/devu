@@ -1,7 +1,15 @@
+import 'dart:ffi';
+
+import 'package:devu_app/page/add_category_page.dart';
+import 'package:devu_app/page/add_expenses_page.dart';
 import 'package:devu_app/widget/test.dart';
 import 'package:flutter/material.dart';
 
 class HomeAppBar extends StatelessWidget {
+  String pageName;
+
+  HomeAppBar(this.pageName);
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -41,7 +49,9 @@ class HomeAppBar extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8))),
-              onPressed: routeSettingPage,
+              onPressed: () {
+                Navigator.pushNamed(context, pageName);
+              },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,

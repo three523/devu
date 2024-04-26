@@ -1,7 +1,7 @@
 import 'package:devu_app/data/model/filter_data.dart';
 import 'package:devu_app/data/model/day_expense.dart';
 import 'package:devu_app/data/model/expense.dart';
-import 'package:devu_app/extenstion.dart';
+import 'package:devu_app/utils/extenstion.dart';
 import 'package:hive/hive.dart';
 
 enum FilterType { category, label }
