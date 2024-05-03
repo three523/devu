@@ -2,7 +2,7 @@ import 'dart:ffi';
 
 import 'package:devu_app/page/add_category_page.dart';
 import 'package:devu_app/page/add_expenses_page.dart';
-import 'package:devu_app/widget/test.dart';
+import 'package:devu_app/widget/date_swipe_widget.dart';
 import 'package:flutter/material.dart';
 
 class HomeAppBar extends StatelessWidget {
@@ -22,7 +22,7 @@ class HomeAppBar extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TestWidget(),
+                DateSwipeWidget(),
                 Row(
                   children: [
                     Text(

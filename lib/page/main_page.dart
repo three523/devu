@@ -4,7 +4,7 @@ import 'package:devu_app/page/add_expenses_page.dart';
 import 'package:devu_app/widget/category_card.dart';
 import 'package:devu_app/widget/home_appbar.dart';
 import 'package:devu_app/widget/income_card.dart';
-import 'package:devu_app/widget/test.dart';
+import 'package:devu_app/widget/date_swipe_widget.dart';
 import 'package:devu_app/widget/year_month_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -51,9 +51,17 @@ class _MainPageState extends State<MainPage> {
                   ),
                   itemCount: 4,
                   itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: CategoryCard(25.0, CardType.view),
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, '/detailCategory');
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: CategoryCard(
+                          25.0,
+                          categoryName: '식비',
+                        ),
+                      ),
                     );
                   }),
             ),

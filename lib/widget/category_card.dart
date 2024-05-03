@@ -9,9 +9,14 @@ enum CardType { view, input }
 
 class CategoryCard extends StatefulWidget {
   final double filePercent;
-  CardType cardType = CardType.view;
+  CardType cardType;
 
-  CategoryCard(this.filePercent, this.cardType);
+  String? categoryName;
+  Function(int)? updatePrice;
+
+  CategoryCard(this.filePercent,
+      {CardType? cardType, this.categoryName, this.updatePrice})
+      : cardType = cardType ?? CardType.view;
 
   @override
   State<CategoryCard> createState() => _CategoryCardState();
@@ -21,6 +26,7 @@ class _CategoryCardState extends State<CategoryCard> {
   List<Color> gradientColors = [primaryColor, primary200Color];
   TextEditingController priceController = TextEditingController(text: '0');
 
+  int previousPrice = 0;
   int price = 0;
 
   @override
@@ -40,7 +46,7 @@ class _CategoryCardState extends State<CategoryCard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('식비'),
+                  Text(widget.categoryName ?? ''),
                   widget.cardType == CardType.view
                       ? Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
@@ -110,7 +116,17 @@ class _CategoryCardState extends State<CategoryCard> {
                         IconButton(
                             onPressed: () {
                               setState(() {
-                                price = price < 10000 ? 0 : price - 10000;
+                                if (price < 10000) {
+                                  if (widget.updatePrice != null) {
+                                    widget.updatePrice!(-price);
+                                  }
+                                  price = 0;
+                                } else {
+                                  if (widget.updatePrice != null) {
+                                    widget.updatePrice!(-10000);
+                                  }
+                                  price -= 10000;
+                                }
                                 priceController.text = price.toPriceString();
                               });
                             },
@@ -130,9 +146,14 @@ class _CategoryCardState extends State<CategoryCard> {
                             onChanged: (value) {
                               setState(() {
                                 if (value.isEmpty) {
+                                  previousPrice = price;
                                   price = 0;
+                                  updatePrice(0 - price);
                                 } else {
-                                  price = value.toPrice() ?? price;
+                                  int newPrice = value.toPrice() ?? price;
+                                  previousPrice = price;
+                                  price = newPrice;
+                                  updatePrice(newPrice - price);
                                 }
                                 priceController.text = price.toPriceString();
                               });
@@ -148,6 +169,9 @@ class _CategoryCardState extends State<CategoryCard> {
                               }
                               setState(() {
                                 price += 10000;
+                                if (widget.updatePrice != null) {
+                                  widget.updatePrice!(10000);
+                                }
                                 priceController.text = price.toPriceString();
                               });
                             },
@@ -173,5 +197,11 @@ class _CategoryCardState extends State<CategoryCard> {
         ),
       ),
     );
+  }
+
+  void updatePrice(int addPrice) {
+    if (widget.updatePrice != null) {
+      widget.updatePrice!(addPrice);
+    }
   }
 }
