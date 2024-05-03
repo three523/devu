@@ -2,31 +2,32 @@ import 'package:devu_app/widget/year_month_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 
-class TestWidget extends StatefulWidget {
+class DateSwipeWidget extends StatefulWidget {
   DateTime currentDate = DateTime.now();
+  MainAxisAlignment alignment;
 
-  TestWidget({super.key});
+  DateSwipeWidget({MainAxisAlignment? alignment})
+      : alignment = alignment ?? MainAxisAlignment.start;
   @override
-  State<TestWidget> createState() => _TestWidgetState();
+  State<DateSwipeWidget> createState() => _DateSwipeWidgetState();
 }
 
-class _TestWidgetState extends State<TestWidget> {
+class _DateSwipeWidgetState extends State<DateSwipeWidget> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return Container(
-      child: Row(
-        children: [
-          IconButton(
-              onPressed: previousMonth, icon: const Icon(Icons.arrow_back_ios)),
-          TextButton(
-              onPressed: showDatePicker,
-              child: Text(
-                  "${widget.currentDate.year}년 ${widget.currentDate.month}월")),
-          IconButton(
-              onPressed: nextMonth, icon: const Icon(Icons.arrow_forward_ios)),
-        ],
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        IconButton(
+            onPressed: previousMonth, icon: const Icon(Icons.arrow_back_ios)),
+        TextButton(
+            onPressed: showDatePicker,
+            child: Text(
+                "${widget.currentDate.year}년 ${widget.currentDate.month}월")),
+        IconButton(
+            onPressed: nextMonth, icon: const Icon(Icons.arrow_forward_ios)),
+      ],
     );
   }
 
