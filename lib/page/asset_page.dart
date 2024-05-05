@@ -82,59 +82,62 @@ class _AssetPageState extends State<AssetPage> {
                 ],
               ),
             ),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                return ExpandablePageView(
-                  onPageChanged: onPageViewChange,
-                  scrollDirection: Axis.horizontal,
-                  controller: PageController(
-                    viewportFraction: 0.8,
-                  ),
-                  itemCount: 4,
-                  itemBuilder: (context, index) {
-                    return AssetCard();
-                  },
-                );
-              },
-            ),
-            Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: SizedBox(
-                height: 8,
-                width: double.infinity,
-                child: Center(
-                  child: ListView.separated(
-                    itemCount: 4,
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ExpandablePageView(
+                    onPageChanged: onPageViewChange,
                     scrollDirection: Axis.horizontal,
-                    shrinkWrap: true,
-                    padding: EdgeInsets.symmetric(horizontal: 8),
+                    controller: PageController(
+                      viewportFraction: 0.8,
+                    ),
+                    itemCount: 4,
                     itemBuilder: (context, index) {
-                      return Container(
-                        width: 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          border: currentPageIndex == index
-                              ? null
-                              : Border.all(
-                                  width: 0.5,
-                                  color: Colors.black,
-                                ),
-                          borderRadius: BorderRadius.circular(8),
-                          color: currentPageIndex == index
-                              ? primaryColor
-                              : Colors.white,
-                        ),
-                      );
-                    },
-                    separatorBuilder: (context, index) {
-                      return SizedBox(
-                        width: 4,
-                      );
+                      return AssetCard();
                     },
                   ),
-                ),
+                  Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: SizedBox(
+                      height: 8,
+                      width: double.infinity,
+                      child: Center(
+                        child: ListView.separated(
+                          itemCount: 4,
+                          scrollDirection: Axis.horizontal,
+                          shrinkWrap: true,
+                          padding: EdgeInsets.symmetric(horizontal: 8),
+                          itemBuilder: (context, index) {
+                            return Container(
+                              width: 8,
+                              height: 8,
+                              decoration: BoxDecoration(
+                                border: currentPageIndex == index
+                                    ? null
+                                    : Border.all(
+                                        width: 0.5,
+                                        color: Colors.black,
+                                      ),
+                                borderRadius: BorderRadius.circular(8),
+                                color: currentPageIndex == index
+                                    ? primaryColor
+                                    : Colors.white,
+                              ),
+                            );
+                          },
+                          separatorBuilder: (context, index) {
+                            return SizedBox(
+                              width: 4,
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
+            )
           ],
         ),
       ),
