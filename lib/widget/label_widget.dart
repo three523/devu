@@ -31,23 +31,26 @@ class LabelWidget extends StatelessWidget {
         color: backgroundColor,
       ),
       padding: padding,
-      child: Row(
-        children: [
-          if (icon != null)
-            Padding(
-              padding: const EdgeInsets.only(right: 4.0),
-              child: Icon(
-                icon,
-                color: foregroundColor,
-                size: 12.0,
+      child: Center(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            if (icon != null)
+              Padding(
+                padding: const EdgeInsets.only(right: 4.0),
+                child: Icon(
+                  icon,
+                  color: foregroundColor,
+                  size: 12.0,
+                ),
               ),
+            Text(
+              name,
+              style: TextStyle(color: foregroundColor),
+              textAlign: TextAlign.center,
             ),
-          Text(
-            name,
-            style: TextStyle(color: foregroundColor),
-            textAlign: TextAlign.center,
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

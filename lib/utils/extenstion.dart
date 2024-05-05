@@ -124,7 +124,14 @@ extension StringExtension on String {
 }
 
 // 9000 => '9,000' 형식으로 숫자를 쉼표를 추가하여 문자로 변환
-extension PriceExtension on int {
+extension PriceExtensionInt on int {
+  String toPriceString() {
+    var format = NumberFormat('#,###');
+    return format.format(this);
+  }
+}
+
+extension PriceExtensionDouble on double {
   String toPriceString() {
     var format = NumberFormat('#,###');
     return format.format(this);
