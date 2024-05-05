@@ -158,7 +158,6 @@ class _MainPageState extends State<MainPage> {
   }
 
   void onPageViewChange(int page) {
-    print('Current Page: ${page.toString()}');
     setState(() {
       currentPageIndex = page;
     });

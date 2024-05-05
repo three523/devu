@@ -5,6 +5,7 @@ import 'package:devu_app/page/asset_page.dart';
 import 'package:devu_app/page/detail_category_page.dart';
 import 'package:devu_app/page/main_page.dart';
 import 'package:devu_app/page/setting_page.dart';
+import 'package:devu_app/page/setup_asset_page.dart';
 import 'package:flutter/material.dart';
 
 class NavigationBarPage extends StatefulWidget {
@@ -17,7 +18,7 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
 
   final List<Widget> _widgetOptions = <Widget>[
     MainPage(),
-    AssetPage(),
+    AssetPage('/setupAsset'),
     SettingPage(),
   ];
 
@@ -28,6 +29,7 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
       routes: {
         '/addCategory': (context) => AddCategory(),
         '/addExpenses': (context) => AddExpenses(),
+        '/setupAsset': (context) => SetupAsset(),
         '/detailCategory': (context) => DetailCategory(),
       },
       home: Scaffold(
