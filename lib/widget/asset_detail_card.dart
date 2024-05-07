@@ -31,6 +31,9 @@ class AssetDetailCard extends StatelessWidget {
                     fontWeight: FontWeight.w800,
                   ),
                 ),
+                SizedBox(
+                  width: 8,
+                ),
                 LabelWidget(
                   "7%",
                   Colors.green,
@@ -121,17 +124,18 @@ class AssetDetailCard extends StatelessWidget {
             ),
           ),
           Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-            child: TextField(
-              controller: TextEditingController(text: '조급하지 말 것!'),
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                isDense: true,
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+            padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.all(Radius.circular(4)),
               ),
-              style: TextStyle(color: Colors.black),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                child: Text('조급하지 말 것!'),
+              ),
             ),
           ),
           Padding(

@@ -121,7 +121,7 @@ class _SetupAssetState extends State<SetupAsset> {
           ),
           TextFormField(
             decoration: InputDecoration(
-              hintText: '기록에 표시할 상세 내용을 적어주세요',
+              hintText: '자산에 표시할 한줄 메모를 적어주세요',
               border: OutlineInputBorder(),
               contentPadding: EdgeInsets.symmetric(vertical: 2, horizontal: 4),
             ),

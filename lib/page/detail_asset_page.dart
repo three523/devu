@@ -1,4 +1,7 @@
+import 'dart:ffi';
+
 import 'package:devu_app/data/resource.dart';
+import 'package:devu_app/utils/trianglePainter.dart';
 import 'package:devu_app/widget/asset_detail_card.dart';
 import 'package:devu_app/widget/income_card.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,9 +13,13 @@ class DetailAssetPage extends StatefulWidget {
   State<DetailAssetPage> createState() => _DetailAssetPageState();
 }
 
+enum MenuType { update, delete }
+
 class _DetailAssetPageState extends State<DetailAssetPage> {
   List<Color> gradientColors = [primaryColor, primary200Color];
   double filePercent = 25.0;
+  double triangleSize = 12.0;
+  List<String> labelList = ['예금', '장기체', '미국ETF'];
 
   @override
   Widget build(BuildContext context) {
@@ -25,10 +32,32 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
           icon: Icon(Icons.arrow_back_ios),
         ),
         actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.menu),
-          )
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: PopupMenuButton(
+              color: Colors.white,
+              popUpAnimationStyle: AnimationStyle.noAnimation,
+              onSelected: (value) {
+                switch (value) {
+                  case MenuType.update:
+                    break;
+                  case MenuType.delete:
+                    break;
+                }
+              },
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<MenuType>>[
+                const PopupMenuItem<MenuType>(
+                  value: MenuType.update,
+                  child: Text('수정하기'),
+                ),
+                const PopupMenuItem<MenuType>(
+                  value: MenuType.delete,
+                  child: Text('삭제하기'),
+                ),
+              ],
+              child: Icon(Icons.menu),
+            ),
+          ),
         ],
         title: Text('카테고리 이름'),
       ),
@@ -52,53 +81,100 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
           ),
           Container(
             color: secondaryColor,
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          '총 수익',
-                          style: TextStyle(color: Colors.white),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '총 수익',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white),
+                            ),
+                            Text(
+                              '2024.04.11 기준',
+                              style: TextStyle(color: Colors.white),
+                            )
+                          ],
                         ),
                         Text(
-                          '2024.04.11 기준',
-                          style: TextStyle(color: Colors.white),
-                        )
+                          '45,000원',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.white,
+                          ),
+                        ),
                       ],
                     ),
-                    Text(
-                      '45,000원',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ],
-                ),
-                SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
+                  ),
+                  SafeArea(
                     child: Container(
-                      height: 8,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(6),
-                        gradient: LinearGradient(
-                          colors: gradientColors,
-                          stops: [
-                            filePercent.round() / 100,
-                            filePercent.round() / 100,
-                          ],
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                        ),
+                      height: 24,
+                      child: Stack(
+                        alignment: Alignment.bottomLeft,
+                        children: [
+                          Container(
+                            height: 8,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(6),
+                              gradient: LinearGradient(
+                                colors: gradientColors,
+                                stops: [
+                                  filePercent.round() / 100,
+                                  filePercent.round() / 100,
+                                ],
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                              ),
+                            ),
+                          ),
+                          getTriangle(25, '3.4%', Colors.red, triangleSize),
+                          getTriangle(
+                              70, '7%', Colors.yellowAccent, triangleSize),
+                        ],
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget getTriangle(int persent, String text, Color color, double size) {
+    return Positioned(
+      bottom: 5,
+      left: MediaQuery.of(context).size.width * (persent / 100) - size - 1,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          ClipPath(
+            clipper: CustomTriangleClipper(),
+            child: Container(
+              width: size,
+              height: size,
+              decoration: BoxDecoration(
+                color: color,
+              ),
+            ),
+          ),
+          Text(
+            text,
+            style: TextStyle(color: color),
           )
         ],
       ),
@@ -109,7 +185,7 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24),
+          padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 12),
           child: AssetDetailCard(),
         ),
         Padding(
@@ -122,20 +198,71 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
                 "저축 내역",
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('추가하기'),
-                  Icon(
-                    Icons.arrow_forward_ios,
-                    size: 14,
-                  ),
-                ],
+              TextButton.icon(
+                onPressed: () {},
+                icon: Text('추가하기'),
+                label: Icon(
+                  Icons.arrow_forward_ios,
+                  size: 12,
+                ),
+                style: ButtonStyle(
+                  padding: MaterialStatePropertyAll(EdgeInsets.zero),
+                  overlayColor: MaterialStateProperty.all(Colors.transparent),
+                ),
               )
             ],
           ),
         ),
       ],
+    );
+  }
+
+  void showAddIncomeDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            child: Column(
+              children: [
+                Text('추가할 금액을 입력해주세요.'),
+                SizedBox(
+                  height: 12,
+                ),
+                Column(
+                  children: [
+                    Text('500만원'),
+                    Text('- 5,000,000 +'),
+                  ],
+                ),
+                Text('라벨을 붙여주세요'),
+                SizedBox(
+                  height: 16,
+                ),
+                DropdownMenu<Text>(
+                  dropdownMenuEntries: [
+                    DropdownMenuEntry(value: Text(''), label: labelList[0]),
+                    DropdownMenuEntry(value: Text(''), label: labelList[1]),
+                  ],
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0))),
+                  onPressed: () {},
+                  child: Text(
+                    '확인',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
