@@ -2,6 +2,7 @@ import 'package:devu_app/data/resource.dart';
 import 'package:devu_app/page/add_category_page.dart';
 import 'package:devu_app/page/add_expenses_page.dart';
 import 'package:devu_app/page/asset_page.dart';
+import 'package:devu_app/page/detail_asset_page.dart';
 import 'package:devu_app/page/detail_category_page.dart';
 import 'package:devu_app/page/main_page.dart';
 import 'package:devu_app/page/setting_page.dart';
@@ -31,6 +32,7 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
         '/addExpenses': (context) => AddExpenses(),
         '/setupAsset': (context) => SetupAsset(),
         '/detailCategory': (context) => DetailCategory(),
+        'detailAsset': (context) => DetailAssetPage(),
       },
       home: Scaffold(
         body: _widgetOptions.elementAt(_selectedIndex),

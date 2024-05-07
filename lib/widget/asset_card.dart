@@ -13,15 +13,13 @@ class _AssetCardState extends State<AssetCard> {
 
   List<String> labelList = ['저축', '배당금', '예금'];
 
-  List<Color> gradientColors = [primaryColor, primary200Color];
+  List<Color> gradientColors = [secondaryColor, primary200Color];
 
   final double filePercent = 25;
 
   final int dDay = 255;
 
   final double todayIncomPersent = 8.8;
-
-  bool isLoading = false;
 
   Size size = const Size(0.0, 0.0);
 

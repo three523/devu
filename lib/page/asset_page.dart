@@ -94,7 +94,12 @@ class _AssetPageState extends State<AssetPage> {
                     ),
                     itemCount: 4,
                     itemBuilder: (context, index) {
-                      return AssetCard();
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pushNamed('detailAsset');
+                        },
+                        child: AssetCard(),
+                      );
                     },
                   ),
                   Padding(
