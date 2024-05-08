@@ -1,4 +1,4 @@
-import 'package:devu_app/widget/label.dart';
+import 'package:devu_app/widget/label_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -36,7 +36,7 @@ class IncomeCard extends StatelessWidget {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Label(title: '필요함'),
+                            LabelWidget('필요함', Colors.red),
                           ],
                         ),
                       )

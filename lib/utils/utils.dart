@@ -77,12 +77,26 @@ String formatToKoreanNumber(int value) {
       return value.toString();
     }
 
-    final val = formatThousands(element);
+    // final val = formatThousands(element);
+    final val = commaizeNumber(element);
     final unit = units[index * 4];
     index += 1;
 
     return "${val}${unit} ${value}";
   });
+}
+
+String commaizeNumber(dynamic value) {
+  String numStr = value.toString();
+  int decimalPointIndex = numStr.indexOf('.');
+  RegExp commaizeRegExp = RegExp(r'(\d)(?=(\d\d\d)+(?!\d))');
+
+  return decimalPointIndex > -1
+      ? numStr.substring(0, decimalPointIndex).replaceAllMapped(
+              commaizeRegExp, (match) => '${match.group(1)},') +
+          numStr.substring(decimalPointIndex)
+      : numStr.replaceAllMapped(
+          commaizeRegExp, (match) => '${match.group(1)},');
 }
 
 String formatThousands(int num) {

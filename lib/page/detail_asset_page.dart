@@ -1,9 +1,12 @@
 import 'dart:ffi';
 
 import 'package:devu_app/data/resource.dart';
+import 'package:devu_app/utils/extenstion.dart';
 import 'package:devu_app/utils/trianglePainter.dart';
+import 'package:devu_app/utils/utils.dart';
 import 'package:devu_app/widget/asset_detail_card.dart';
 import 'package:devu_app/widget/income_card.dart';
+import 'package:devu_app/widget/number_update_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -48,11 +51,32 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
               itemBuilder: (BuildContext context) => <PopupMenuEntry<MenuType>>[
                 const PopupMenuItem<MenuType>(
                   value: MenuType.update,
-                  child: Text('수정하기'),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.edit,
+                        size: 20,
+                      ),
+                      Text('수정하기'),
+                    ],
+                  ),
                 ),
                 const PopupMenuItem<MenuType>(
                   value: MenuType.delete,
-                  child: Text('삭제하기'),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.delete,
+                        size: 20,
+                        color: Colors.red,
+                      ),
+                      Text(
+                        '삭제하기',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ],
+                  ),
                 ),
               ],
               child: Icon(Icons.menu),
@@ -199,7 +223,9 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
               ),
               TextButton.icon(
-                onPressed: () {},
+                onPressed: () {
+                  showAddIncomeDialog(context, setState);
+                },
                 icon: Text('추가하기'),
                 label: Icon(
                   Icons.arrow_forward_ios,
@@ -217,51 +243,73 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
     );
   }
 
-  void showAddIncomeDialog(BuildContext context) {
+  void showAddIncomeDialog(BuildContext context, Function setState) {
+    int income = 0;
     showDialog(
       context: context,
       builder: (context) {
-        return Dialog(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: Column(
-              children: [
-                Text('추가할 금액을 입력해주세요.'),
-                SizedBox(
-                  height: 12,
-                ),
-                Column(
-                  children: [
-                    Text('500만원'),
-                    Text('- 5,000,000 +'),
-                  ],
-                ),
-                Text('라벨을 붙여주세요'),
-                SizedBox(
-                  height: 16,
-                ),
-                DropdownMenu<Text>(
-                  dropdownMenuEntries: [
-                    DropdownMenuEntry(value: Text(''), label: labelList[0]),
-                    DropdownMenuEntry(value: Text(''), label: labelList[1]),
-                  ],
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.0))),
-                  onPressed: () {},
-                  child: Text(
-                    '확인',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
+        return StatefulBuilder(builder: (context, setState) {
+          return Dialog(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('추가할 금액을 입력해주세요.'),
+                  SizedBox(
+                    height: 12,
                   ),
-                )
-              ],
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text('${formatToKoreanNumber(income)}원'),
+                      NumberUpdateWidget(
+                        10000,
+                        (num) => {
+                          setState(() {
+                            income = num.toInt();
+                          })
+                        },
+                        valueType: ValueType.money,
+                      ),
+                    ],
+                  ),
+                  Text('라벨을 붙여주세요'),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  DropdownMenu<Text>(
+                    dropdownMenuEntries: [
+                      DropdownMenuEntry(value: Text(''), label: labelList[0]),
+                      DropdownMenuEntry(value: Text(''), label: labelList[1]),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 12.0,
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4.0),
+                          ),
+                          backgroundColor: primaryColor),
+                      onPressed: () {},
+                      child: Text(
+                        '확인',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-        );
+          );
+        });
       },
     );
   }
