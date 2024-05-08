@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style license
 // that can be found in the LICENSE file.
 
+import 'dart:ffi';
+
 import 'package:devu_app/data/repository/expense_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -90,12 +92,20 @@ extension IntExtension on int {
 // 9,000 같이 숫자 구분을 위해 쉼표가 되어있는 경우 사용
 extension StringExtension on String {
   int? toPrice() {
-    final maxValue = "9,223,372,036,854,775,807";
+    const maxValue = "9,223,372,036,854,775,807";
     if (length > maxValue.length) {
       return null;
     }
     final str = removeFrontZero(this);
     return int.parse(str.replaceAll(",", ""));
+  }
+
+  double? toDouble() {
+    const maxLength = 20;
+    if (length > maxLength) {
+      return null;
+    }
+    return double.tryParse(replaceAll(",", "")) ?? 0;
   }
 
   String removeFrontZero(String string) {
@@ -132,6 +142,13 @@ extension PriceExtensionInt on int {
 }
 
 extension PriceExtensionDouble on double {
+  String toPriceString() {
+    var format = NumberFormat('#,###');
+    return format.format(this);
+  }
+}
+
+extension PriceExtensionNum on num {
   String toPriceString() {
     var format = NumberFormat('#,###');
     return format.format(this);
