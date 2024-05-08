@@ -1,6 +1,7 @@
 import 'package:devu_app/data/resource.dart';
 import 'package:devu_app/utils/extenstion.dart';
 import 'package:devu_app/utils/utils.dart';
+import 'package:devu_app/widget/label_selector_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -162,12 +163,7 @@ class _AddExpensesState extends State<AddExpenses> {
             SizedBox(
               height: 8,
             ),
-            DropdownMenu<Text>(
-              dropdownMenuEntries: [
-                DropdownMenuEntry(value: Text(''), label: labelList[0]),
-                DropdownMenuEntry(value: Text(''), label: labelList[1]),
-              ],
-            ),
+            LabelSelectorWidget(),
             SizedBox(
               height: 30.0,
             ),
