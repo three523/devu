@@ -6,6 +6,7 @@ import 'package:devu_app/utils/trianglePainter.dart';
 import 'package:devu_app/utils/utils.dart';
 import 'package:devu_app/widget/asset_detail_card.dart';
 import 'package:devu_app/widget/income_card.dart';
+import 'package:devu_app/widget/label_selector_widget.dart';
 import 'package:devu_app/widget/number_update_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -279,12 +280,7 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
                   SizedBox(
                     height: 16,
                   ),
-                  DropdownMenu<Text>(
-                    dropdownMenuEntries: [
-                      DropdownMenuEntry(value: Text(''), label: labelList[0]),
-                      DropdownMenuEntry(value: Text(''), label: labelList[1]),
-                    ],
-                  ),
+                  LabelSelectorWidget(),
                   SizedBox(
                     height: 12.0,
                   ),

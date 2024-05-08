@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:devu_app/utils/extenstion.dart';
+import 'package:flutter/material.dart';
 
 int getHashCode(DateTime key) {
   return key.day * 1000000 + key.month * 10000 + key.year;
@@ -134,4 +135,12 @@ extension StringMapWithIndex on String {
     }
     return result;
   }
+}
+
+Color getTextColorForBackground(Color backgroundColor) {
+  // 배경색의 밝기 계산
+  double brightness = backgroundColor.computeLuminance();
+
+  // 밝기에 따라 텍스트 색상 결정
+  return brightness < 0.5 ? Colors.white : Colors.black;
 }

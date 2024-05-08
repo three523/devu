@@ -3,6 +3,7 @@
 // that can be found in the LICENSE file.
 
 import 'dart:ffi';
+import 'dart:math';
 
 import 'package:devu_app/data/repository/expense_repository.dart';
 import 'package:flutter/material.dart';
@@ -152,5 +153,10 @@ extension PriceExtensionNum on num {
   String toPriceString() {
     var format = NumberFormat('#,###');
     return format.format(this);
+  }
+
+  num customRound(int place) {
+    var valueForPlace = pow(10, place);
+    return (this * valueForPlace).round();
   }
 }

@@ -67,11 +67,13 @@ class _NumberUpdateWidgetState extends State<NumberUpdateWidget> {
                   padding: EdgeInsets.zero,
                   onPressed: () {
                     setState(() {
+                      final num newValue;
                       if (totalNum < _updateValue) {
-                        totalNum = 0;
+                        newValue = 0;
                       } else {
-                        totalNum -= _updateValue;
+                        newValue = totalNum - _updateValue;
                       }
+                      totalNum = double.parse(newValue.toStringAsFixed(1));
                       updatePrice(totalNum);
                       priceController.text = _valueType.valueToString(totalNum);
                     });
@@ -128,7 +130,8 @@ class _NumberUpdateWidgetState extends State<NumberUpdateWidget> {
                       return;
                     }
                     setState(() {
-                      totalNum += _updateValue;
+                      final newValue = totalNum + _updateValue;
+                      totalNum = double.parse(newValue.toStringAsFixed(1));
                       widget.updatePrice(totalNum);
                       priceController.text = _valueType.valueToString(totalNum);
                     });
