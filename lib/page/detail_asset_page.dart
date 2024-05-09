@@ -251,38 +251,60 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
       builder: (context) {
         return StatefulBuilder(builder: (context, setState) {
           return Dialog(
+            backgroundColor: Colors.white,
             child: Padding(
               padding: const EdgeInsets.all(24),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('추가할 금액을 입력해주세요.'),
+                  SizedBox(
+                    width: double.infinity,
+                    child: Text(
+                      '추가할 금액을 입력해주세요.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 18.0,
+                      ),
+                    ),
+                  ),
                   SizedBox(
                     height: 12,
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text('${formatToKoreanNumber(income)}원'),
+                      Text(
+                        '${formatToKoreanNumber(income)}원',
+                        textAlign: TextAlign.right,
+                      ),
                       NumberUpdateWidget(
                         10000,
                         (num) => {
-                          setState(() {
-                            income = num.toInt();
-                          })
+                          setState(
+                            () {
+                              income = num.toInt();
+                            },
+                          )
                         },
                         valueType: ValueType.money,
                       ),
                     ],
                   ),
-                  Text('라벨을 붙여주세요'),
+                  SizedBox(
+                    height: 24.0,
+                  ),
+                  Text(
+                    '라벨을 붙여주세요',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   SizedBox(
                     height: 16,
                   ),
                   LabelSelectorWidget(),
                   SizedBox(
-                    height: 12.0,
+                    height: 32.0,
                   ),
                   SizedBox(
                     width: double.infinity,

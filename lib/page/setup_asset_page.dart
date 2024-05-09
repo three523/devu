@@ -6,12 +6,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-class SetupAsset extends StatefulWidget {
+class SetupAssetPage extends StatefulWidget {
   @override
-  State<SetupAsset> createState() => _SetupAssetState();
+  State<SetupAssetPage> createState() => _SetupAssetPageState();
 }
 
-class _SetupAssetState extends State<SetupAsset> {
+class _SetupAssetPageState extends State<SetupAssetPage> {
   DateTime selectedDate = DateTime.now();
   int goalMoeny = 0;
   double goalRateOfReturn = 0.0;
@@ -182,13 +182,6 @@ class _SetupAssetState extends State<SetupAsset> {
             LabelSelectorWidget(
               onSelecteds: (p0) {},
             ),
-            // DropdownMenu<Text>(
-            //   dropdownMenuEntries: [
-            //     DropdownMenuEntry(value: Text(''), label: labelList[0]),
-            //     DropdownMenuEntry(value: Text(''), label: labelList[1]),
-            //     DropdownMenuEntry(value: Text(''), label: labelList[2]),
-            //   ],
-            // ),
             SizedBox(
               height: 20.0,
             ),

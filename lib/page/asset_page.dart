@@ -96,7 +96,7 @@ class _AssetPageState extends State<AssetPage> {
                     itemBuilder: (context, index) {
                       return GestureDetector(
                         onTap: () {
-                          Navigator.of(context).pushNamed('detailAsset');
+                          Navigator.of(context).pushNamed('/detailAsset');
                         },
                         child: AssetCard(),
                       );

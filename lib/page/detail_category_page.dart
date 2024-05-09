@@ -4,7 +4,7 @@ import 'package:devu_app/widget/date_swipe_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class DetailCategory extends StatelessWidget {
+class DetailCategoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

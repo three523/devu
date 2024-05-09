@@ -1,5 +1,6 @@
 import 'package:devu_app/data/model/label.dart';
 import 'package:devu_app/data/resource.dart';
+import 'package:devu_app/page/add_label_page.dart';
 import 'package:devu_app/widget/label_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -69,9 +70,10 @@ class _LabelSelectorWidgetState extends State<LabelSelectorWidget> {
       context: context,
       builder: (context) {
         return StatefulBuilder(
-          builder:
-              (BuildContext context, void Function(void Function()) setState) {
+          builder: (BuildContext context,
+              void Function(void Function()) dialogSetState) {
             return Dialog(
+              backgroundColor: Colors.white,
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -90,8 +92,68 @@ class _LabelSelectorWidgetState extends State<LabelSelectorWidget> {
                         runSpacing: 4.0,
                         children: [
                           for (int i = 0; i < labelList.length; i++)
-                            getLabelWidget(i, context, setState)
+                            getLabelWidget(i, context, dialogSetState)
                         ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 12.0,
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: TextButton(
+                        onPressed: () async {
+                          final List<Label> newLabelList = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AddLabelPage(
+                                labelList,
+                                (newLabelList) {
+                                  dialogSetState(
+                                    () {
+                                      setState(() {
+                                        labelList = newLabelList;
+                                        List<Label> newSelectedList =
+                                            selectedList
+                                                .where((element) =>
+                                                    labelList.contains(element))
+                                                .toList();
+                                        selectedList = newSelectedList;
+                                      });
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
+                          );
+                          labelList = newLabelList;
+                        },
+                        child: Text(
+                          '태그 생성하러가기 >',
+                          style: TextStyle(
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 12.0,
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4.0),
+                            ),
+                            backgroundColor: primaryColor),
+                        onPressed: () {},
+                        child: Text(
+                          '확인',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
                     )
                   ],
@@ -122,7 +184,8 @@ class _LabelSelectorWidgetState extends State<LabelSelectorWidget> {
   }
 
   Widget getLabelWidget(int index, BuildContext context, Function refresh) {
-    String name = labelList[index].name;
+    final String name = labelList[index].name;
+    final Color color = labelList[index].color;
 
     final isSelected = selectedList.any((element) => element.name == name);
 
@@ -138,8 +201,7 @@ class _LabelSelectorWidgetState extends State<LabelSelectorWidget> {
           });
         });
       },
-      child: LabelWidget(labelList[index].name,
-          isSelected ? labelList[index].color : disableButtonColor),
+      child: LabelWidget(name, isSelected ? color : disableButtonColor),
     );
   }
 }

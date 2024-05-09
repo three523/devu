@@ -27,8 +27,8 @@ class _MainPageState extends State<MainPage> {
         foregroundColor: Colors.white,
         shape: CircleBorder(),
         onPressed: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => AddExpenses()));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => AddExpensesPage()));
         },
         child: Icon(Icons.add),
       ),

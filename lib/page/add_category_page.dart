@@ -9,14 +9,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-class AddCategory extends StatefulWidget {
-  AddCategory();
+class AddCategoryPage extends StatefulWidget {
+  AddCategoryPage();
 
   @override
-  State<AddCategory> createState() => _AddCategoryState();
+  State<AddCategoryPage> createState() => _AddCategoryPageState();
 }
 
-class _AddCategoryState extends State<AddCategory> {
+class _AddCategoryPageState extends State<AddCategoryPage> {
   List<String> categoryItemList = ['교통비', '식비', '용돈'];
   List<Color> categoryColorList = [
     Colors.redAccent,
