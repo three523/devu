@@ -9,12 +9,12 @@ enum RecodeType { income, expenses }
 
 //TODO: 키보드 올라갈때 버튼 어떻게 할지 처리하기
 
-class AddExpenses extends StatefulWidget {
+class AddExpensesPage extends StatefulWidget {
   @override
-  State<AddExpenses> createState() => _AddExpensesState();
+  State<AddExpensesPage> createState() => _AddExpensesPageState();
 }
 
-class _AddExpensesState extends State<AddExpenses> {
+class _AddExpensesPageState extends State<AddExpensesPage> {
   final isSelected = <bool>[true, false];
   List<String> labelList = ['충동구매', '예상 초과'];
   TextEditingController priceController = TextEditingController(text: '0');

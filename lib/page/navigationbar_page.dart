@@ -1,6 +1,7 @@
 import 'package:devu_app/data/resource.dart';
 import 'package:devu_app/page/add_category_page.dart';
 import 'package:devu_app/page/add_expenses_page.dart';
+import 'package:devu_app/page/add_label_page.dart';
 import 'package:devu_app/page/asset_page.dart';
 import 'package:devu_app/page/detail_asset_page.dart';
 import 'package:devu_app/page/detail_category_page.dart';
@@ -28,11 +29,11 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
     return MaterialApp(
       initialRoute: '/',
       routes: {
-        '/addCategory': (context) => AddCategory(),
-        '/addExpenses': (context) => AddExpenses(),
-        '/setupAsset': (context) => SetupAsset(),
-        '/detailCategory': (context) => DetailCategory(),
-        'detailAsset': (context) => DetailAssetPage(),
+        '/addCategory': (context) => AddCategoryPage(),
+        '/addExpenses': (context) => AddExpensesPage(),
+        '/setupAsset': (context) => SetupAssetPage(),
+        '/detailCategory': (context) => DetailCategoryPage(),
+        '/detailAsset': (context) => DetailAssetPage(),
       },
       home: Scaffold(
         body: _widgetOptions.elementAt(_selectedIndex),
