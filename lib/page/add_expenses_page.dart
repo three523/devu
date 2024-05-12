@@ -1,23 +1,39 @@
+import 'package:devu_app/data/model/expense_category.dart';
+import 'package:devu_app/data/model/expense_category_list.dart';
+import 'package:devu_app/data/model/money.dart';
+import 'package:devu_app/data/model/tag.dart';
 import 'package:devu_app/data/resource.dart';
+import 'package:devu_app/expense_bloc.dart';
+import 'package:devu_app/expense_event.dart';
+import 'package:devu_app/expense_state.dart';
 import 'package:devu_app/utils/extenstion.dart';
 import 'package:devu_app/utils/utils.dart';
 import 'package:devu_app/widget/label_selector_widget.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:table_calendar/table_calendar.dart';
+import 'package:uuid/uuid.dart';
 
 enum RecodeType { income, expenses }
 
 //TODO: 키보드 올라갈때 버튼 어떻게 할지 처리하기
 
 class AddExpensesPage extends StatefulWidget {
+  ExpenseCategory? expenseCategory;
+
+  AddExpensesPage({this.expenseCategory});
+
   @override
   State<AddExpensesPage> createState() => _AddExpensesPageState();
 }
 
 class _AddExpensesPageState extends State<AddExpensesPage> {
   final isSelected = <bool>[true, false];
-  List<String> labelList = ['충동구매', '예상 초과'];
+  List<Tag> tagList = [];
   TextEditingController priceController = TextEditingController(text: '0');
+  TextEditingController memoController = TextEditingController();
   int price = 0;
   double bottomInset = 0.0;
 
@@ -140,13 +156,20 @@ class _AddExpensesPageState extends State<AddExpensesPage> {
                               EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8))),
-                      onPressed: () {},
-                      child: Text('식비'),
+                      onPressed: () {
+                        final state =
+                            BlocProvider.of<ExpenseBloc>(context).state;
+                        if (state is ExpenseSucessState) {
+                          final categoryList = state.eventModel.categoryList;
+                          showCategorySelectDialog(context, categoryList);
+                        }
+                      },
+                      child: Text(widget.expenseCategory?.title ?? ''),
                     ),
-                    isOutOfExpenses()
+                    isOutOfExpenses() == null
                         ? Container()
                         : Text(
-                            '예산을 10,000원 초과했어요',
+                            '예산을 ${isOutOfExpenses()}원 초과했어요',
                             style: TextStyle(color: Colors.red),
                           ),
                   ],
@@ -163,7 +186,11 @@ class _AddExpensesPageState extends State<AddExpensesPage> {
             SizedBox(
               height: 8,
             ),
-            LabelSelectorWidget(),
+            LabelSelectorWidget(
+              onSelecteds: (newTagList) {
+                tagList = newTagList;
+              },
+            ),
             SizedBox(
               height: 30.0,
             ),
@@ -184,6 +211,7 @@ class _AddExpensesPageState extends State<AddExpensesPage> {
                 padding: const EdgeInsets.all(8.0),
                 child: Center(
                   child: TextField(
+                    controller: memoController,
                     maxLines: null,
                     decoration: InputDecoration.collapsed(
                       hintText: '기록에 표시될 상세 내용을 작성해주세요.',
@@ -202,7 +230,26 @@ class _AddExpensesPageState extends State<AddExpensesPage> {
           width: double.infinity,
           child: ElevatedButton(
             onPressed: () {
-              Navigator.of(context).pop();
+              int price = priceController.text.toPrice() ?? 0;
+              if (price <= 0) {
+                return;
+              }
+              price = isExpenses() ? price : -price;
+              final category = widget.expenseCategory;
+              if (category != null && isOutOfExpenses() == null) {
+                BlocProvider.of<ExpenseBloc>(context).add(CreateExpenseEvent(
+                    category,
+                    Money(
+                        id: Uuid().v4().toString(),
+                        title: memoController.text,
+                        categoryId: category.id,
+                        date: DateTime.now(),
+                        value: price,
+                        tagList: [])));
+                Navigator.of(context).pop();
+              } else {
+                //TODO: 카테고리 선택 된 경우 에러처리
+              }
             },
             child: Text('저장하기'),
           ),
@@ -215,7 +262,107 @@ class _AddExpensesPageState extends State<AddExpensesPage> {
     return isSelected[0];
   }
 
-  bool isOutOfExpenses() {
-    return true;
+  int? isOutOfExpenses() {
+    if (priceController.text.toPrice() == null &&
+        widget.expenseCategory == null) {
+      return null;
+    }
+    final category = widget.expenseCategory!;
+    int categoryUsedMoney = category.expenseList
+        .fold(0, (previousValue, element) => previousValue + element.value);
+    int leftMoney = category.belowMoeny - categoryUsedMoney;
+    final price = priceController.text.toPrice()!;
+    leftMoney = leftMoney - price;
+
+    if (leftMoney < 0) {
+      return -leftMoney;
+    }
+
+    return null;
+  }
+
+  void showCategorySelectDialog(
+      BuildContext context, List<ExpenseCategory> categoryList) {
+    int categoryIndex = 0;
+    if (widget.expenseCategory != null) {
+      categoryIndex = categoryList
+          .indexWhere((element) => element.id == widget.expenseCategory!.id);
+      if (categoryIndex == -1) {
+        categoryIndex = 0;
+      }
+    }
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (BuildContext context,
+              void Function(void Function()) dialogSetState) {
+            return Dialog(
+              backgroundColor: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      widget.expenseCategory?.title ?? '',
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12.0),
+                      child: Container(
+                        width: double.infinity,
+                        height: 0.5,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 200,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: Column(
+                          children: [
+                            for (int i = 0; i < categoryList.length; i++)
+                              GestureDetector(
+                                onTap: () {
+                                  dialogSetState(
+                                    () {
+                                      setState(() {
+                                        categoryIndex = i;
+                                        widget.expenseCategory =
+                                            categoryList[i];
+                                      });
+                                    },
+                                  );
+                                },
+                                child: Container(
+                                  width: double.infinity,
+                                  color: i == categoryIndex
+                                      ? primaryColor
+                                      : Colors.white,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12.0),
+                                    child: Text(
+                                      categoryList[i].title,
+                                    ),
+                                  ),
+                                ),
+                              )
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 }

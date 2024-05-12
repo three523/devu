@@ -1,8 +1,14 @@
+import 'package:devu_app/data/model/expense_category.dart';
+import 'package:devu_app/data/model/money.dart';
+import 'package:devu_app/data/model/tag.dart';
 import 'package:devu_app/widget/label_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class IncomeCard extends StatelessWidget {
+  Money money;
+
+  IncomeCard(this.money);
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -27,7 +33,7 @@ class IncomeCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text('4월 급여'),
+                      Text(money.title),
                       SizedBox(
                         height: 2,
                       ),
@@ -36,7 +42,12 @@ class IncomeCard extends StatelessWidget {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            LabelWidget('필요함', Colors.red),
+                            for (int i = 0; i < money.tagList.length; i++)
+                              Padding(
+                                padding: const EdgeInsets.only(right: 4.0),
+                                child: LabelWidget(money.tagList[i].name,
+                                    Color(money.tagList[i].color)),
+                              ),
                           ],
                         ),
                       )
@@ -44,7 +55,7 @@ class IncomeCard extends StatelessWidget {
                   ),
                 ),
                 Spacer(),
-                Text('+300만원'),
+                Text('${-money.value}'),
               ],
             ),
           ],

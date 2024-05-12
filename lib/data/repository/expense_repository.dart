@@ -1,117 +1,164 @@
+import 'dart:ffi';
+
+import 'package:devu_app/data/model/asset_category.dart';
+import 'package:devu_app/data/model/expense_category.dart';
+import 'package:devu_app/data/model/expense_category_list.dart';
 import 'package:devu_app/data/model/filter_data.dart';
 import 'package:devu_app/data/model/day_expense.dart';
-import 'package:devu_app/data/model/expense.dart';
+import 'package:devu_app/data/model/money.dart';
+import 'package:devu_app/data/model/tag.dart';
 import 'package:devu_app/utils/extenstion.dart';
+import 'package:devu_app/utils/utils.dart';
+import 'package:devu_app/widget/asset_card.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
 enum FilterType { category, label }
 
 class ExpenseRepository {
-  final Box<DayExpense> expenseBox = Hive.box<DayExpense>('expense');
-  final Box<FilterData> filterBox = Hive.box<FilterData>('filter');
+  final Box<AssetCategory> assetBox = Hive.box<AssetCategory>('AssetCategory');
+  final Box<ExpenseCategoryList> expenseBox =
+      Hive.box<ExpenseCategoryList>('ExpenseCategory');
+  final Box<Tag> tagBox = Hive.box<Tag>('Tag');
 
   ExpenseRepository() {
     _init();
   }
 
   void _init() {
-    if (filterBox.get(FilterType.category.name) == null) {
-      List<String> categorys = ['취미/여가', '음식', '교통비', '숙박'];
-      final FilterData categoryList =
-          FilterData(key: FilterType.category.name, dataList: categorys);
-      filterBox.put(FilterType.category.name, categoryList);
-    }
-
-    if (filterBox.get(FilterType.label.name) == null) {
-      List<String> labels = ['A', 'B', 'C', 'D'];
-      final FilterData labelList =
-          FilterData(key: FilterType.label.name, dataList: labels);
-      filterBox.put(FilterType.label.name, labelList);
+    if (tagBox.keys.isEmpty) {
+      Map<String, Tag> tagList = {
+        '충동구매': Tag('충동구매', Colors.red.value),
+        '고정수입': Tag('고정수입', Colors.green.value),
+        '예금': Tag('저축', Colors.blue.value),
+      };
+      tagBox.putAll(tagList);
     }
   }
 
-  Future<void> createExpense(DateTime date, Expense newExpense) async {
-    final int key = dateTimeToUnixTimestamp(date);
-    final DayExpense? dayExpense = expenseBox.get(key);
-    if (dayExpense != null) {
-      dayExpense.expenseList.add(newExpense);
-      await expenseBox.put(key, dayExpense);
+  Future<void> createExpense(
+      DateTime date, ExpenseCategory category, Money newExpense) async {
+    final DateTime firstDayOfMonth = getFirstDayOfMonth(date);
+    final int key = dateTimeToUnixTimestamp(firstDayOfMonth);
+    final ExpenseCategoryList? dayCategoryList = expenseBox.get(key);
+
+    if (dayCategoryList != null) {
+      final int categoryIndex = dayCategoryList.categoryList
+          .indexWhere((element) => element.id == category.id);
+      if (categoryIndex != -1) {
+        dayCategoryList.categoryList[categoryIndex].expenseList.add(newExpense);
+        await expenseBox.put(key, dayCategoryList);
+      }
     } else {
-      final DayExpense newDayExpense =
-          DayExpense(timeStamp: key, expenseList: [newExpense]);
-      await expenseBox.put(key, newDayExpense);
+      await createCateroy(date, category);
     }
   }
 
   Future<void> updateExpense(
-      DateTime date, String id, Expense updatedExpense) async {
-    final int key = dateTimeToUnixTimestamp(date);
-    final DayExpense? dayExpense = expenseBox.get(key);
-    if (dayExpense != null) {
-      final int index =
-          dayExpense.expenseList.indexWhere((expense) => expense.id == id);
+      DateTime date, String id, Money updatedExpense) async {
+    final DateTime firstDayOfMonth = getFirstDayOfMonth(date);
+    final int key = dateTimeToUnixTimestamp(firstDayOfMonth);
+    final ExpenseCategoryList? dayCategoryList = expenseBox.get(key);
+
+    if (dayCategoryList != null) {
+      final int index = dayCategoryList.categoryList
+          .indexWhere((expense) => expense.id == id);
       if (index != -1) {
-        dayExpense.expenseList[index] = updatedExpense;
-        await expenseBox.put(key, dayExpense);
+        final int moneyIndex = dayCategoryList.categoryList[index].expenseList
+            .indexWhere((element) => element.id == updatedExpense.id);
+        if (moneyIndex != -1) {
+          dayCategoryList.categoryList[index].expenseList[moneyIndex] =
+              updatedExpense;
+          await expenseBox.put(key, dayCategoryList);
+        }
       }
     }
   }
 
-  Future<void> deleteExpense(DateTime date, String id) async {
-    final int key = dateTimeToUnixTimestamp(date);
-    final DayExpense? dayExpense = expenseBox.get(key);
-    if (dayExpense != null) {
-      dayExpense.expenseList.removeWhere((expense) => expense.id == id);
-      await expenseBox.put(key, dayExpense);
+  Future<void> deleteExpense(
+      DateTime date, String categoryId, String expenseId) async {
+    final DateTime firstDayOfMonth = getFirstDayOfMonth(date);
+    final int key = dateTimeToUnixTimestamp(firstDayOfMonth);
+    final ExpenseCategoryList? dayCategoryList = expenseBox.get(key);
+    if (dayCategoryList != null) {
+      final categoryIndex = dayCategoryList.categoryList
+          .indexWhere((element) => element.id == categoryId);
+      if (categoryIndex != -1) {
+        dayCategoryList.categoryList[categoryIndex].expenseList
+            .removeWhere((element) => element.id == expenseId);
+        await expenseBox.put(key, dayCategoryList);
+      }
     }
   }
 
-  Future<void> createCateroy(FilterType kind, String category) async {
-    final FilterData? categoryList = filterBox.get(kind.name);
-    if (categoryList != null) {
-      categoryList.dataList.add(category);
-      await filterBox.put(kind.name, categoryList);
+  Future<void> createCateroy(DateTime date, ExpenseCategory category) async {
+    final DateTime firstDayOfMonth = getFirstDayOfMonth(date);
+    final int key = dateTimeToUnixTimestamp(firstDayOfMonth);
+    ExpenseCategoryList? dayCategoryList = expenseBox.get(key);
+    if (dayCategoryList != null) {
+      dayCategoryList.categoryList.add(category);
     } else {
-      final FilterData categoryList =
-          FilterData(key: kind.name, dataList: [category]);
-      await filterBox.put(kind.name, categoryList);
+      dayCategoryList = ExpenseCategoryList(key, [category]);
     }
+    await expenseBox.put(key, dayCategoryList);
   }
 
   Future<void> updateCategory(
-      FilterType kind, String oldCategory, String newCategory) async {
-    final FilterData? categoryList = filterBox.get(kind.name);
+      DateTime date, ExpenseCategory newCategory) async {
+    final DateTime firstDayOfMonth = getFirstDayOfMonth(date);
+    final int key = dateTimeToUnixTimestamp(firstDayOfMonth);
+    final ExpenseCategoryList? categoryList = expenseBox.get(key);
     if (categoryList != null) {
-      final int index = categoryList.dataList
-          .indexWhere((category) => oldCategory == category);
+      final int index = categoryList.categoryList
+          .indexWhere((category) => newCategory.id == category.id);
       if (index != -1) {
-        categoryList.dataList[index] = newCategory;
-        await filterBox.put(kind.name, categoryList);
+        categoryList.categoryList[index] = newCategory;
+        await expenseBox.put(key, categoryList);
       }
     }
   }
 
-  Future<void> deleteCategory(FilterType kind, String deleteCategory) async {
-    final FilterData? categoryList = filterBox.get(kind.name);
+  Future<void> deleteCategory(
+      DateTime date, ExpenseCategory deleteCategory) async {
+    final DateTime firstDayOfMonth = getFirstDayOfMonth(date);
+    final int key = dateTimeToUnixTimestamp(firstDayOfMonth);
+    final ExpenseCategoryList? categoryList = expenseBox.get(key);
     if (categoryList != null) {
-      categoryList.dataList
-          .removeWhere((category) => deleteCategory == category);
-      await filterBox.put(kind.name, categoryList);
+      print(
+          'delete category:${deleteCategory.title} ${categoryList.categoryList.length}');
+      for (int i = 0; i < categoryList.categoryList.length; i++) {
+        print('uuid: ${categoryList.categoryList[i].id}');
+      }
+      categoryList.categoryList
+          .removeWhere((category) => deleteCategory.id == category.id);
+      print(
+          'after :${deleteCategory.title} ${categoryList.categoryList.length}');
+      await expenseBox.put(key, categoryList);
     }
   }
 
-  List<String> getAllCategory(FilterType kind) {
-    final FilterData? category = filterBox.get(kind.name);
-    return category?.dataList ?? [];
+  List<ExpenseCategoryList> getAllCategory() {
+    final List<ExpenseCategoryList> categoryList = expenseBox.values.toList();
+    return categoryList;
   }
 
-  List<Expense> getExpensesByDate(DateTime date) {
-    final int key = dateTimeToUnixTimestamp(date);
-    final DayExpense? dayExpense = expenseBox.get(key);
-    return dayExpense?.expenseList ?? [];
+  ExpenseCategoryList getExpensesByDate(DateTime date) {
+    final DateTime firstDayOfMonth = getFirstDayOfMonth(date);
+    final int key = dateTimeToUnixTimestamp(firstDayOfMonth);
+    final ExpenseCategoryList? categoryList = expenseBox.get(key);
+    return categoryList ?? ExpenseCategoryList(key, []);
   }
 
-  int dateTimeToUnixTimestamp(DateTime dateTime) {
-    return dateTime.withoutTime.millisecondsSinceEpoch ~/ 1000;
+  DateTime getFirstDayOfMonth(DateTime dateTime) {
+    return DateTime(dateTime.year, dateTime.month);
   }
+
+  // int dateTimeToUnixTimestamp(DateTime dateTime) {
+  //   return dateTime.withoutTime.millisecondsSinceEpoch ~/ 1000;
+  // }
+
+  // DateTime unixTimestampToDateTime(int timestamp) {
+  //   return DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
+  // }
 }

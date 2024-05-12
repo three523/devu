@@ -1,3 +1,4 @@
+import 'package:devu_app/data/model/expense_category.dart';
 import 'package:devu_app/data/resource.dart';
 import 'package:devu_app/utils/extenstion.dart';
 import 'package:devu_app/utils/utils.dart';
@@ -11,11 +12,11 @@ class CategoryCard extends StatefulWidget {
   final double filePercent;
   CardType cardType;
 
-  String? categoryName;
-  Function(int)? updatePrice;
+  ExpenseCategory? category;
+  Function(ExpenseCategory?, int)? updatePrice;
 
   CategoryCard(this.filePercent,
-      {CardType? cardType, this.categoryName, this.updatePrice})
+      {CardType? cardType, this.category, this.updatePrice})
       : cardType = cardType ?? CardType.view;
 
   @override
@@ -24,10 +25,13 @@ class CategoryCard extends StatefulWidget {
 
 class _CategoryCardState extends State<CategoryCard> {
   List<Color> gradientColors = [primaryColor, primary200Color];
-  TextEditingController priceController = TextEditingController(text: '0');
+  late TextEditingController priceController = TextEditingController(
+      text: widget.category != null
+          ? widget.category!.belowMoeny.toPriceString()
+          : '0');
 
-  int previousPrice = 0;
-  int price = 0;
+  late int previousPrice = widget.category?.belowMoeny ?? 0;
+  late int price = widget.category?.belowMoeny ?? 0;
 
   @override
   Widget build(BuildContext context) {
@@ -46,13 +50,19 @@ class _CategoryCardState extends State<CategoryCard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(widget.categoryName ?? ''),
+                  Text(widget.category?.title ?? ''),
                   widget.cardType == CardType.view
                       ? Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text(
-                              '120,500',
+                              widget.category?.expenseList
+                                      .fold(
+                                          0,
+                                          (value, element) =>
+                                              value + element.value)
+                                      .toPriceString() ??
+                                  '0',
                               style: TextStyle(
                                   fontSize: titleFontSize,
                                   fontWeight: FontWeight.w800),
@@ -61,7 +71,7 @@ class _CategoryCardState extends State<CategoryCard> {
                               width: 4,
                             ),
                             Text(
-                              '/24만',
+                              '/${formatToKoreanNumber(widget.category?.belowMoeny ?? 0)}',
                               style: TextStyle(fontSize: contentTextSize),
                             ),
                           ],
@@ -95,8 +105,8 @@ class _CategoryCardState extends State<CategoryCard> {
                                 gradient: LinearGradient(
                                   colors: gradientColors,
                                   stops: [
-                                    widget.filePercent.round() / 100,
-                                    widget.filePercent.round() / 100,
+                                    usedMoneyRate().toDouble() / 100,
+                                    usedMoneyRate().toDouble() / 100,
                                   ],
                                   begin: Alignment.centerLeft,
                                   end: Alignment.centerRight,
@@ -106,7 +116,7 @@ class _CategoryCardState extends State<CategoryCard> {
                         SizedBox(
                           width: 12.0,
                         ),
-                        Text("${widget.filePercent.round()}%"),
+                        Text("${usedMoneyRate()}%"),
                       ],
                     ),
                   )
@@ -117,14 +127,10 @@ class _CategoryCardState extends State<CategoryCard> {
                             onPressed: () {
                               setState(() {
                                 if (price < 10000) {
-                                  if (widget.updatePrice != null) {
-                                    widget.updatePrice!(-price);
-                                  }
+                                  updatePrice(-price);
                                   price = 0;
                                 } else {
-                                  if (widget.updatePrice != null) {
-                                    widget.updatePrice!(-10000);
-                                  }
+                                  updatePrice(-10000);
                                   price -= 10000;
                                 }
                                 priceController.text = price.toPriceString();
@@ -169,9 +175,8 @@ class _CategoryCardState extends State<CategoryCard> {
                               }
                               setState(() {
                                 price += 10000;
-                                if (widget.updatePrice != null) {
-                                  widget.updatePrice!(10000);
-                                }
+
+                                updatePrice(10000);
                                 priceController.text = price.toPriceString();
                               });
                             },
@@ -187,7 +192,7 @@ class _CategoryCardState extends State<CategoryCard> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    '매일 4,000원씩 쓸 수 있어요',
+                    '매일 ${everyDaysAvailableMoney(widget.cardType == CardType.input)}원씩 쓸 수 있어요',
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),
@@ -201,7 +206,46 @@ class _CategoryCardState extends State<CategoryCard> {
 
   void updatePrice(int addPrice) {
     if (widget.updatePrice != null) {
-      widget.updatePrice!(addPrice);
+      widget.updatePrice!(widget.category, addPrice);
     }
+  }
+
+  int everyDaysAvailableMoney(bool isFirstDayOfMonth) {
+    final category = widget.category;
+    if (category != null) {
+      final int compareDay;
+      final now = DateTime.now();
+      if (isFirstDayOfMonth) {
+        compareDay = 1;
+      } else {
+        compareDay = now.day;
+      }
+      final currentMonthLastDay = DateTime(now.year, now.month + 1, 0).day;
+      final remainigDays = currentMonthLastDay - compareDay;
+
+      final usedMoney = category.expenseList
+          .fold(0, (previousValue, element) => previousValue + element.value);
+      final leftMoney = category.belowMoeny - usedMoney;
+      if (leftMoney <= 0) {
+        return 0;
+      }
+      return (leftMoney / remainigDays).floor();
+    }
+    return 0;
+  }
+
+  int usedMoneyRate() {
+    final category = widget.category;
+    if (category != null) {
+      final usedMoney = category.expenseList
+          .fold(0, (previousValue, element) => previousValue + element.value);
+      if (usedMoney == 0) {
+        return 0;
+      }
+      final belowMoney = category.belowMoeny;
+      final usedMoneyRate = (usedMoney / belowMoney) * 100;
+      return usedMoneyRate.round();
+    }
+    return 0;
   }
 }

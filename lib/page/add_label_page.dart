@@ -1,13 +1,12 @@
-import 'package:devu_app/data/model/label.dart';
+import 'package:devu_app/data/model/tag.dart';
 import 'package:devu_app/utils/utils.dart';
 import 'package:devu_app/widget/default_button.dart';
 import 'package:devu_app/widget/label_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class AddLabelPage extends StatefulWidget {
-  List<Label> labelList;
-  Function(List<Label>) updateList;
+  List<Tag> labelList;
+  Function(List<Tag>) updateList;
   AddLabelPage(this.labelList, this.updateList);
   @override
   State<AddLabelPage> createState() => _AddLabelPageState();
@@ -142,7 +141,7 @@ class _AddLabelPageState extends State<AddLabelPage> {
     final color = selectedColor;
     if (validate(name, color) && !isExisLabel(name)) {
       setState(() {
-        widget.labelList.add(Label(name, color!));
+        widget.labelList.add(Tag(name, color!.value));
         widget.updateList(widget.labelList);
       });
     }
@@ -169,7 +168,7 @@ class _AddLabelPageState extends State<AddLabelPage> {
 
   Widget getLabelWidget(int index) {
     final String name = widget.labelList[index].name;
-    final Color color = widget.labelList[index].color;
+    final Color color = Color(widget.labelList[index].color);
 
     return GestureDetector(
       onTap: () {

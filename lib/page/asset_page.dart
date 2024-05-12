@@ -1,12 +1,18 @@
+import 'package:devu_app/data/model/tag.dart';
+import 'package:devu_app/data/repository/expense_repository.dart';
 import 'package:devu_app/data/resource.dart';
+import 'package:devu_app/page/detail_asset_page.dart';
 import 'package:devu_app/widget/asset_card.dart';
 import 'package:devu_app/widget/expandable_page_view.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class AssetPage extends StatefulWidget {
   final pageName;
+  List<Tag> labelList = [
+    Tag('예금', Colors.red.value),
+    Tag('정기', Colors.blue.value),
+    Tag('추가', Colors.green.value)
+  ];
 
   AssetPage(this.pageName);
 
@@ -96,9 +102,10 @@ class _AssetPageState extends State<AssetPage> {
                     itemBuilder: (context, index) {
                       return GestureDetector(
                         onTap: () {
-                          Navigator.of(context).pushNamed('/detailAsset');
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => DetailAssetPage('신혼비')));
                         },
-                        child: AssetCard(),
+                        child: AssetCard(widget.labelList),
                       );
                     },
                   ),

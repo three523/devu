@@ -7,8 +7,9 @@ import 'package:flutter/material.dart';
 
 class HomeAppBar extends StatelessWidget {
   String pageName;
+  Function pushRoute;
 
-  HomeAppBar(this.pageName);
+  HomeAppBar(this.pageName, this.pushRoute);
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +51,8 @@ class HomeAppBar extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8))),
               onPressed: () {
-                Navigator.pushNamed(context, pageName);
+                // Navigator.pushNamed(context, pageName);
+                pushRoute();
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,

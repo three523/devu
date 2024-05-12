@@ -1,18 +1,19 @@
-import 'dart:ffi';
-
+import 'package:devu_app/data/model/money.dart';
+import 'package:devu_app/data/model/tag.dart';
 import 'package:devu_app/data/resource.dart';
-import 'package:devu_app/utils/extenstion.dart';
 import 'package:devu_app/utils/trianglePainter.dart';
 import 'package:devu_app/utils/utils.dart';
 import 'package:devu_app/widget/asset_detail_card.dart';
 import 'package:devu_app/widget/income_card.dart';
 import 'package:devu_app/widget/label_selector_widget.dart';
 import 'package:devu_app/widget/number_update_widget.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class DetailAssetPage extends StatefulWidget {
+  String title;
+
+  DetailAssetPage(this.title);
+
   @override
   State<DetailAssetPage> createState() => _DetailAssetPageState();
 }
@@ -23,7 +24,11 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
   List<Color> gradientColors = [primaryColor, primary200Color];
   double filePercent = 25.0;
   double triangleSize = 12.0;
-  List<String> labelList = ['예금', '장기체', '미국ETF'];
+  List<Tag> labelList = [
+    Tag('예금', Colors.red.value),
+    Tag('정기', Colors.blue.value),
+    Tag('추가', Colors.green.value)
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +89,7 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
             ),
           ),
         ],
-        title: Text('카테고리 이름'),
+        title: Text(widget.title),
       ),
       body: Column(
         children: [
@@ -95,7 +100,19 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
                 if (index == 0) {
                   return getHeader();
                 }
-                return IncomeCard();
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: IncomeCard(
+                    Money(
+                      id: '',
+                      categoryId: '',
+                      title: '',
+                      date: DateTime.now(),
+                      value: 10000,
+                      tagList: [],
+                    ),
+                  ),
+                );
               },
               separatorBuilder: (context, index) {
                 return SizedBox(
