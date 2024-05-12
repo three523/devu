@@ -1,4 +1,4 @@
-import 'package:devu_app/data/model/expense.dart';
+import 'package:devu_app/data/model/money.dart';
 import 'package:hive/hive.dart';
 
 part 'day_expense.g.dart';
@@ -14,7 +14,7 @@ class DayExpense {
   int timeStamp;
 
   @HiveField(1)
-  List<Expense> expenseList;
+  List<Money> expenseList;
 
   @override
   String toString() => '{timeStamp: $timeStamp, expenseList: $expenseList}';

@@ -1,47 +1,50 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'expense.dart';
+part of 'expense_category.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class ExpenseAdapter extends TypeAdapter<Expense> {
+class ExpenseCategoryAdapter extends TypeAdapter<ExpenseCategory> {
   @override
-  final int typeId = 0;
+  final int typeId = 4;
 
   @override
-  Expense read(BinaryReader reader) {
+  ExpenseCategory read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Expense(
-      id: fields[0] as String,
-      price: fields[1] as int,
-      date: fields[2] as DateTime,
-      type: fields[3] as String,
-      eventCategory: fields[4] as String,
-      labels: fields[5] == null ? [] : (fields[5] as List).cast<String>(),
+    return ExpenseCategory(
+      fields[0] as String,
+      fields[1] as String,
+      fields[2] as int,
+      fields[3] as int,
+      (fields[4] as List).cast<Money>(),
+      fields[5] as String,
+      (fields[6] as List).cast<Tag>(),
     );
   }
 
   @override
-  void write(BinaryWriter writer, Expense obj) {
+  void write(BinaryWriter writer, ExpenseCategory obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.price)
+      ..write(obj.title)
       ..writeByte(2)
-      ..write(obj.date)
+      ..write(obj.belowMoeny)
       ..writeByte(3)
-      ..write(obj.type)
+      ..write(obj.timeStamp)
       ..writeByte(4)
-      ..write(obj.eventCategory)
+      ..write(obj.expenseList)
       ..writeByte(5)
-      ..write(obj.labels);
+      ..write(obj.memo)
+      ..writeByte(6)
+      ..write(obj.tagList);
   }
 
   @override
@@ -50,7 +53,7 @@ class ExpenseAdapter extends TypeAdapter<Expense> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ExpenseAdapter &&
+      other is ExpenseCategoryAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

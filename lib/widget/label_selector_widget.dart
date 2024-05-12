@@ -1,27 +1,25 @@
-import 'package:devu_app/data/model/label.dart';
+import 'package:devu_app/data/model/tag.dart';
 import 'package:devu_app/data/resource.dart';
 import 'package:devu_app/page/add_label_page.dart';
 import 'package:devu_app/widget/label_widget.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class LabelSelectorWidget extends StatefulWidget {
-  Function(List<Label>)? onSelecteds;
-  List<Label>? selectedList;
+  Function(List<Tag>)? onSelecteds;
+  List<Tag>? selectedList;
 
-  LabelSelectorWidget({Function(List<Label>)? onSelecteds, this.selectedList});
+  LabelSelectorWidget({Function(List<Tag>)? onSelecteds, this.selectedList});
 
   @override
   State<LabelSelectorWidget> createState() => _LabelSelectorWidgetState();
 }
 
 class _LabelSelectorWidgetState extends State<LabelSelectorWidget> {
-  List<Label> selectedList = [];
-  List<Label> labelList = [
-    Label('예금', Colors.red),
-    Label('장기체', Colors.deepOrange),
-    Label('미국ETF', Colors.green),
+  List<Tag> selectedList = [];
+  List<Tag> labelList = [
+    Tag('예금', Colors.red.value),
+    Tag('장기체', Colors.deepOrange.value),
+    Tag('미국ETF', Colors.green.value),
   ];
   @override
   Widget build(BuildContext context) {
@@ -103,7 +101,7 @@ class _LabelSelectorWidgetState extends State<LabelSelectorWidget> {
                       width: double.infinity,
                       child: TextButton(
                         onPressed: () async {
-                          final List<Label> newLabelList = await Navigator.push(
+                          final List<Tag> newLabelList = await Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => AddLabelPage(
@@ -113,11 +111,10 @@ class _LabelSelectorWidgetState extends State<LabelSelectorWidget> {
                                     () {
                                       setState(() {
                                         labelList = newLabelList;
-                                        List<Label> newSelectedList =
-                                            selectedList
-                                                .where((element) =>
-                                                    labelList.contains(element))
-                                                .toList();
+                                        List<Tag> newSelectedList = selectedList
+                                            .where((element) =>
+                                                labelList.contains(element))
+                                            .toList();
                                         selectedList = newSelectedList;
                                       });
                                     },
@@ -175,17 +172,21 @@ class _LabelSelectorWidgetState extends State<LabelSelectorWidget> {
           refresh(() {
             setState(() {
               selectedList.removeAt(index);
+              if (widget.onSelecteds != null) {
+                widget.onSelecteds!(selectedList);
+              }
             });
           });
         },
-        child: LabelWidget(selectedList[index].name, selectedList[index].color),
+        child: LabelWidget(
+            selectedList[index].name, Color(selectedList[index].color)),
       ),
     );
   }
 
   Widget getLabelWidget(int index, BuildContext context, Function refresh) {
     final String name = labelList[index].name;
-    final Color color = labelList[index].color;
+    final Color color = Color(labelList[index].color);
 
     final isSelected = selectedList.any((element) => element.name == name);
 
@@ -197,6 +198,9 @@ class _LabelSelectorWidgetState extends State<LabelSelectorWidget> {
               selectedList.removeWhere((element) => element.name == name);
             } else {
               selectedList.add(labelList[index]);
+            }
+            if (widget.onSelecteds != null) {
+              widget.onSelecteds!(selectedList);
             }
           });
         });

@@ -1,17 +1,18 @@
+import 'package:devu_app/data/model/tag.dart';
 import 'package:devu_app/data/resource.dart';
 import 'package:devu_app/widget/label_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class AssetCard extends StatefulWidget {
+  List<Tag> labelList;
+  AssetCard(this.labelList);
+
   @override
   State<AssetCard> createState() => _AssetCardState();
 }
 
 class _AssetCardState extends State<AssetCard> {
   final GlobalKey _globalKey = GlobalKey();
-
-  List<String> labelList = ['저축', '배당금', '예금'];
 
   List<Color> gradientColors = [secondaryColor, primary200Color];
 
@@ -104,11 +105,12 @@ class _AssetCardState extends State<AssetCard> {
                     padding: EdgeInsets.symmetric(vertical: 4),
                     child: Row(
                       children: [
-                        for (int i = 0; i < labelList.length; i++)
+                        for (int i = 0; i < widget.labelList.length; i++)
                           Padding(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 4.0),
-                            child: LabelWidget(labelList[i], Colors.redAccent,
+                            child: LabelWidget(widget.labelList[i].name,
+                                Color(widget.labelList[i].color),
                                 padding: EdgeInsets.symmetric(
                                     horizontal: 6, vertical: 2)),
                           )

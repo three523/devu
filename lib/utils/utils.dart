@@ -144,3 +144,11 @@ Color getTextColorForBackground(Color backgroundColor) {
   // 밝기에 따라 텍스트 색상 결정
   return brightness < 0.5 ? Colors.white : Colors.black;
 }
+
+int dateTimeToUnixTimestamp(DateTime dateTime) {
+  return dateTime.withoutTime.millisecondsSinceEpoch ~/ 1000;
+}
+
+DateTime unixTimestampToDateTime(int timestamp) {
+  return DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
+}

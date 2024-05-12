@@ -1,37 +1,42 @@
-import 'dart:ui';
-
-import 'package:devu_app/data/resource.dart';
+import 'package:devu_app/data/model/expense_category.dart';
+import 'package:devu_app/data/model/expense_category_list.dart';
+import 'package:devu_app/expense_bloc.dart';
+import 'package:devu_app/expense_event.dart';
+import 'package:devu_app/expense_state.dart';
 import 'package:devu_app/utils/extenstion.dart';
+import 'package:devu_app/utils/utils.dart';
 import 'package:devu_app/widget/category_card.dart';
 import 'package:dotted_border/dotted_border.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:uuid/uuid.dart';
 
 class AddCategoryPage extends StatefulWidget {
-  AddCategoryPage();
+  DateTime categoryDateTime;
+
+  AddCategoryPage(this.categoryDateTime);
 
   @override
   State<AddCategoryPage> createState() => _AddCategoryPageState();
 }
 
 class _AddCategoryPageState extends State<AddCategoryPage> {
-  List<String> categoryItemList = ['교통비', '식비', '용돈'];
-  List<Color> categoryColorList = [
-    Colors.redAccent,
-    Colors.greenAccent,
-    Colors.yellowAccent,
-    Colors.blueAccent,
-    Colors.amberAccent,
-    Colors.cyanAccent,
-  ];
-  Color isSelectedColor = Colors.redAccent;
+  // List<String> categoryItemList = ['교통비', '식비', '용돈'];
   TextEditingController textEditingController = TextEditingController();
   int price = 0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    print('테스트: ${widget.categoryDateTime.day}');
+    BlocProvider.of<ExpenseBloc>(context)
+        .add(LoadByDayExpenseEvent(widget.categoryDateTime));
+  }
+
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -43,29 +48,40 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: ListView.builder(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            itemCount: categoryItemList.length + 2,
-            itemBuilder: (context, index) {
-              return getListViewItem(index);
-            }),
+        child: BlocBuilder<ExpenseBloc, ExpenseState>(
+          builder: (context, state) {
+            if (state is ExpenseSucessState) {
+              return ListView.builder(
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                itemCount: state.eventModel.categoryList.length + 2,
+                itemBuilder: (context, index) {
+                  return getListViewItem(state.eventModel, index);
+                },
+              );
+            } else {
+              return Text('실패');
+            }
+          },
+        ),
       ),
     );
   }
 
-  Widget getListViewItem(int index) {
+  Widget getListViewItem(ExpenseCategoryList categoryList, int index) {
     print(index);
     if (index == 0) {
-      return getHeaderView();
-    } else if (index == categoryItemList.length + 1) {
+      int totalBelowMoney = categoryList.categoryList.fold(
+          0, (previousValue, element) => previousValue + element.belowMoeny);
+      return getHeaderView(totalBelowMoney);
+    } else if (index == categoryList.categoryList.length + 1) {
       return getAddCategoryButton();
     } else {
-      return getCategoryCard(index - 1);
+      return getCategoryCard(categoryList, index - 1);
     }
   }
 
-  Column getHeaderView() {
+  Column getHeaderView(int totalBelowMoney) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -73,7 +89,7 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
         Container(
           width: double.infinity,
           child: Text(
-            price.toPriceString(),
+            totalBelowMoney.toPriceString(),
             textAlign: TextAlign.center,
             maxLines: 1,
             style: TextStyle(
@@ -131,27 +147,36 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
                     decoration: InputDecoration(hintText: '카테고리 이름을 입력해주세요'),
                   ),
                 ),
-                StatefulBuilder(builder: (context, setState) {
-                  return SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        for (int i = 0; i < categoryColorList.length; i++)
-                          categoryColor(i, setState)
-                      ],
-                    ),
-                  );
-                }),
               ],
             ),
             actions: [
               ElevatedButton(
                   onPressed: () {
                     if (textEditingController.text.isEmpty == false) {
-                      setState(() {
-                        categoryItemList.add(textEditingController.text);
-                      });
+                      final title = textEditingController.text;
+                      final state = BlocProvider.of<ExpenseBloc>(context).state;
+                      print(state);
+                      if (state is ExpenseSucessState &&
+                          !state.eventModel.categoryList
+                              .any((element) => element.title == title)) {
+                        BlocProvider.of<ExpenseBloc>(context).add(
+                          CreateCategoryEvent(
+                            widget.categoryDateTime,
+                            ExpenseCategory(
+                              Uuid().v4(),
+                              textEditingController.text,
+                              0,
+                              dateTimeToUnixTimestamp(DateTime.now()),
+                              [],
+                              'test',
+                              [],
+                            ),
+                          ),
+                        );
+                      } else {
+                        //TODO: 타이틀이 같을 경우 에러 처리
+                        print('같은 타이틀');
+                      }
                       Navigator.pop(context);
                     } else {
                       print('카테고리를 입력해주어야합니다.');
@@ -165,7 +190,7 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
         });
   }
 
-  Widget getCategoryCard(int index) {
+  Widget getCategoryCard(ExpenseCategoryList categoryList, int index) {
     return Stack(
       alignment: Alignment.topRight,
       children: [
@@ -173,10 +198,12 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
           padding: const EdgeInsets.all(8),
           child: ConstrainedBox(
             constraints: BoxConstraints(maxHeight: 200, minHeight: 140),
-            child: CategoryCard(0,
-                cardType: CardType.input,
-                categoryName: categoryItemList[index],
-                updatePrice: updateTotalPrice),
+            child: CategoryCard(
+              0,
+              cardType: CardType.input,
+              category: categoryList.categoryList[index],
+              updatePrice: updatePrice,
+            ),
           ),
         ),
         SizedBox(
@@ -185,7 +212,8 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
           child: IconButton.outlined(
             padding: EdgeInsets.all(0.0),
             onPressed: () {
-              removeCategory(index);
+              removeCategory(categoryList.categoryList[index]);
+              textEditingController.text = "";
             },
             color: Colors.black,
             icon: Icon(Icons.close),
@@ -195,42 +223,45 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
     );
   }
 
-  Widget categoryColor(int index, Function setState) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0),
-      child: GestureDetector(
-        onTap: () {
-          setState(() {
-            isSelectedColor = categoryColorList[index];
-          });
-        },
-        child: Container(
-          width: 30,
-          height: 30,
-          decoration: BoxDecoration(
-            border: isSelectedColor == categoryColorList[index]
-                ? Border.all(
-                    color: Colors.black,
-                    width: 1,
-                  )
-                : null,
-            borderRadius: BorderRadius.circular(15),
-            color: categoryColorList[index],
-          ),
-        ),
-      ),
-    );
-  }
+  // Widget categoryColor(int index, Function setState) {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(horizontal: 12.0),
+  //     child: GestureDetector(
+  //       onTap: () {
+  //         setState(() {
+  //           isSelectedColor = categoryColorList[index];
+  //         });
+  //       },
+  //       child: Container(
+  //         width: 30,
+  //         height: 30,
+  //         decoration: BoxDecoration(
+  //           border: isSelectedColor == categoryColorList[index]
+  //               ? Border.all(
+  //                   color: Colors.black,
+  //                   width: 1,
+  //                 )
+  //               : null,
+  //           borderRadius: BorderRadius.circular(15),
+  //           color: categoryColorList[index],
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
-  void updateTotalPrice(int addPrice) {
+  void updatePrice(ExpenseCategory? category, int addPrice) {
     setState(() {
-      price += addPrice;
+      if (category != null) {
+        category.belowMoeny += addPrice;
+        BlocProvider.of<ExpenseBloc>(context)
+            .add(UpdateCategoryEvent(category));
+      }
     });
   }
 
-  void removeCategory(int index) {
-    setState(() {
-      categoryItemList.removeAt(index);
-    });
+  void removeCategory(ExpenseCategory category) {
+    BlocProvider.of<ExpenseBloc>(context)
+        .add(DeleteCategoryEvent(widget.categoryDateTime, category));
   }
 }
