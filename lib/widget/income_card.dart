@@ -1,6 +1,7 @@
 import 'package:devu_app/data/model/expense_category.dart';
 import 'package:devu_app/data/model/money.dart';
 import 'package:devu_app/data/model/tag.dart';
+import 'package:devu_app/utils/extenstion.dart';
 import 'package:devu_app/widget/label_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -24,7 +25,9 @@ class IncomeCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.abc),
+                Icon(isExpense(money.value)
+                    ? Icons.south_east_sharp
+                    : Icons.north_west_sharp),
                 SizedBox(
                   width: 4,
                 ),
@@ -37,30 +40,41 @@ class IncomeCard extends StatelessWidget {
                       SizedBox(
                         height: 2,
                       ),
-                      Container(
-                        height: 26,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            for (int i = 0; i < money.tagList.length; i++)
-                              Padding(
-                                padding: const EdgeInsets.only(right: 4.0),
-                                child: LabelWidget(money.tagList[i].name,
-                                    Color(money.tagList[i].color)),
-                              ),
-                          ],
-                        ),
-                      )
+                      if (money.tagList.isNotEmpty)
+                        Container(
+                          height: 26,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              for (int i = 0; i < money.tagList.length; i++)
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 4.0),
+                                  child: LabelWidget(money.tagList[i].name,
+                                      Color(money.tagList[i].color)),
+                                ),
+                            ],
+                          ),
+                        )
                     ],
                   ),
                 ),
                 Spacer(),
-                Text('${-money.value}'),
+                Text(
+                  '${isExpense(money.value) ? '' : '+'}${(-money.value).toPriceString()}원',
+                  style: TextStyle(
+                      color: isExpense(money.value) ? Colors.red : Colors.green,
+                      fontWeight: FontWeight.w800),
+                ),
               ],
             ),
           ],
         ),
       ),
     );
+  }
+
+  bool isExpense(int money) {
+    print(this.money.tagList);
+    return money >= 0;
   }
 }
