@@ -319,7 +319,9 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
                   SizedBox(
                     height: 16,
                   ),
-                  LabelSelectorWidget(),
+                  LabelSelectorWidget(
+                    onSelecteds: (_) {},
+                  ),
                   SizedBox(
                     height: 32.0,
                   ),

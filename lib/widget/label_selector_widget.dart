@@ -6,21 +6,22 @@ import 'package:flutter/material.dart';
 
 class LabelSelectorWidget extends StatefulWidget {
   Function(List<Tag>)? onSelecteds;
-  List<Tag>? selectedList;
+  List<Tag> selectedList;
 
-  LabelSelectorWidget({Function(List<Tag>)? onSelecteds, this.selectedList});
+  LabelSelectorWidget({Function(List<Tag>)? this.onSelecteds, selectedList})
+      : selectedList = selectedList ?? [];
 
   @override
   State<LabelSelectorWidget> createState() => _LabelSelectorWidgetState();
 }
 
 class _LabelSelectorWidgetState extends State<LabelSelectorWidget> {
-  List<Tag> selectedList = [];
   List<Tag> labelList = [
     Tag('예금', Colors.red.value),
     Tag('장기체', Colors.deepOrange.value),
     Tag('미국ETF', Colors.green.value),
   ];
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -48,7 +49,7 @@ class _LabelSelectorWidgetState extends State<LabelSelectorWidget> {
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Row(
                       children: [
-                        for (int i = 0; i < selectedList.length; i++)
+                        for (int i = 0; i < widget.selectedList.length; i++)
                           getSelectedLabelWidgett(i, context, setState)
                       ],
                     ),
@@ -111,11 +112,16 @@ class _LabelSelectorWidgetState extends State<LabelSelectorWidget> {
                                     () {
                                       setState(() {
                                         labelList = newLabelList;
-                                        List<Tag> newSelectedList = selectedList
+                                        List<Tag> newSelectedList = widget
+                                            .selectedList
                                             .where((element) =>
                                                 labelList.contains(element))
                                             .toList();
-                                        selectedList = newSelectedList;
+                                        widget.selectedList = newSelectedList;
+                                        if (widget.onSelecteds != null) {
+                                          widget.onSelecteds!(
+                                              widget.selectedList);
+                                        }
                                       });
                                     },
                                   );
@@ -144,7 +150,13 @@ class _LabelSelectorWidgetState extends State<LabelSelectorWidget> {
                               borderRadius: BorderRadius.circular(4.0),
                             ),
                             backgroundColor: primaryColor),
-                        onPressed: () {},
+                        onPressed: () {
+                          print('add taglist${widget.selectedList}');
+                          if (widget.onSelecteds != null) {
+                            widget.onSelecteds!(widget.selectedList);
+                          }
+                          Navigator.pop(context);
+                        },
                         child: Text(
                           '확인',
                           style: TextStyle(
@@ -171,15 +183,16 @@ class _LabelSelectorWidgetState extends State<LabelSelectorWidget> {
         onTap: () {
           refresh(() {
             setState(() {
-              selectedList.removeAt(index);
+              widget.selectedList.removeAt(index);
               if (widget.onSelecteds != null) {
-                widget.onSelecteds!(selectedList);
+                print('label seletedWidget:${widget.onSelecteds}');
+                widget.onSelecteds!(widget.selectedList);
               }
             });
           });
         },
-        child: LabelWidget(
-            selectedList[index].name, Color(selectedList[index].color)),
+        child: LabelWidget(widget.selectedList[index].name,
+            Color(widget.selectedList[index].color)),
       ),
     );
   }
@@ -188,19 +201,22 @@ class _LabelSelectorWidgetState extends State<LabelSelectorWidget> {
     final String name = labelList[index].name;
     final Color color = Color(labelList[index].color);
 
-    final isSelected = selectedList.any((element) => element.name == name);
+    final isSelected =
+        widget.selectedList.any((element) => element.name == name);
 
     return GestureDetector(
       onTap: () {
         refresh(() {
           setState(() {
             if (isSelected) {
-              selectedList.removeWhere((element) => element.name == name);
+              widget.selectedList
+                  .removeWhere((element) => element.name == name);
             } else {
-              selectedList.add(labelList[index]);
+              widget.selectedList.add(labelList[index]);
             }
             if (widget.onSelecteds != null) {
-              widget.onSelecteds!(selectedList);
+              print('label:${widget.onSelecteds}');
+              widget.onSelecteds!(widget.selectedList);
             }
           });
         });

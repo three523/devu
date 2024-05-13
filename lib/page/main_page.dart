@@ -152,6 +152,62 @@ class _MainPageState extends State<MainPage> {
                             ),
                           ),
                         ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0, vertical: 8.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "최근 내역",
+                                    style: TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w800),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text('모두보기'),
+                                      Icon(
+                                        Icons.arrow_forward_ios,
+                                        size: 14,
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16.0),
+                              child: Text('2024.04.08 기준'),
+                            ),
+                          ],
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 12.0),
+                            child: ListView.separated(
+                              padding: EdgeInsetsDirectional.symmetric(
+                                  vertical: 12.0),
+                              itemCount: getCategory()?.expenseList.length ?? 0,
+                              itemBuilder: (context, index) {
+                                return IncomeCard(category!.expenseList[index]);
+                              },
+                              separatorBuilder: (context, index) {
+                                return SizedBox(
+                                  height: 12,
+                                );
+                              },
+                            ),
+                          ),
+                        )
                       ],
                     ),
                   );
@@ -160,57 +216,6 @@ class _MainPageState extends State<MainPage> {
                 }
               },
             ),
-            // Column(
-            //   crossAxisAlignment: CrossAxisAlignment.start,
-            //   children: [
-            //     Padding(
-            //       padding: const EdgeInsets.symmetric(
-            //           horizontal: 16.0, vertical: 8.0),
-            //       child: Row(
-            //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //         crossAxisAlignment: CrossAxisAlignment.start,
-            //         children: [
-            //           Text(
-            //             "최근 내역",
-            //             style: TextStyle(
-            //                 fontSize: 22, fontWeight: FontWeight.w800),
-            //           ),
-            //           Row(
-            //             mainAxisAlignment: MainAxisAlignment.center,
-            //             children: [
-            //               Text('모두보기'),
-            //               Icon(
-            //                 Icons.arrow_forward_ios,
-            //                 size: 14,
-            //               ),
-            //             ],
-            //           )
-            //         ],
-            //       ),
-            //     ),
-            //     Padding(
-            //       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            //       child: Text('2024.04.08 기준'),
-            //     ),
-            //   ],
-            // ),
-            // Expanded(
-            //   child: Padding(
-            //     padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            //     child: ListView.separated(
-            //       padding: EdgeInsetsDirectional.symmetric(vertical: 12.0),
-            //       itemCount: getCategory()?.expenseList.length ?? 0,
-            //       itemBuilder: (context, index) {
-            //         return IncomeCard(category!.expenseList[index]);
-            //       },
-            //       separatorBuilder: (context, index) {
-            //         return SizedBox(
-            //           height: 12,
-            //         );
-            //       },
-            //     ),
-            //   ),
-            // )
           ],
         ),
       ),
