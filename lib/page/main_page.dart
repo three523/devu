@@ -236,8 +236,12 @@ class _MainPageState extends State<MainPage> {
     if (category == null) {
       final state = BlocProvider.of<ExpenseBloc>(context).state;
       if (state is ExpenseSucessState) {
-        category = state.eventModel.categoryList[currentPageIndex];
-        return category;
+        if (state.eventModel.categoryList.isNotEmpty) {
+          category = state.eventModel.categoryList[currentPageIndex];
+          return category;
+        } else {
+          return null;
+        }
       }
     } else {
       return category;

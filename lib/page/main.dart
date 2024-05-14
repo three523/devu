@@ -6,9 +6,11 @@ import 'package:devu_app/data/model/day_expense.dart';
 import 'package:devu_app/data/model/money.dart';
 import 'package:devu_app/data/model/tag.dart';
 import 'package:devu_app/data/repository/expense_repository.dart';
+import 'package:devu_app/data/repository/tag_repository.dart';
 import 'package:devu_app/expense_bloc.dart';
 import 'package:devu_app/page/create_event_page.dart';
 import 'package:devu_app/page/navigationbar_page.dart';
+import 'package:devu_app/tag_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -21,7 +23,6 @@ Future<void> main() async {
   Hive.registerAdapter(ExpenseCategoryAdapter());
   Hive.registerAdapter(MoneyAdapter());
   Hive.registerAdapter(TagAdapter());
-  // await Hive.deleteBoxFromDisk('filter');
   await Hive.openBox<AssetCategory>('AssetCategory');
   await Hive.openBox<ExpenseCategoryList>('ExpenseCategory');
   await Hive.openBox<Tag>('Tag');
@@ -34,8 +35,11 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => ExpenseBloc(ExpenseRepository()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => ExpenseBloc(ExpenseRepository())),
+        BlocProvider(create: (_) => TagBloc(TagRepository())),
+      ],
       child: MaterialApp(
           title: 'Flutter Demo',
           theme: ThemeData(

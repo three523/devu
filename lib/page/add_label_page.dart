@@ -1,8 +1,11 @@
 import 'package:devu_app/data/model/tag.dart';
+import 'package:devu_app/tag_bloc.dart';
+import 'package:devu_app/tag_event.dart';
 import 'package:devu_app/utils/utils.dart';
 import 'package:devu_app/widget/default_button.dart';
 import 'package:devu_app/widget/label_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddLabelPage extends StatefulWidget {
   List<Tag> labelList;
@@ -71,6 +74,7 @@ class _AddLabelPageState extends State<AddLabelPage> {
             ),
             TextField(
               controller: textEditingController,
+              maxLength: 10,
               decoration: InputDecoration(
                 contentPadding:
                     EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
@@ -141,11 +145,11 @@ class _AddLabelPageState extends State<AddLabelPage> {
     final color = selectedColor;
     if (validate(name, color) && !isExisLabel(name)) {
       setState(() {
+        createTag(Tag(name, color!.value));
         widget.labelList.add(Tag(name, color!.value));
         widget.updateList(widget.labelList);
       });
     }
-    print('test2');
   }
 
   bool validate(String name, Color? color) {
@@ -173,6 +177,11 @@ class _AddLabelPageState extends State<AddLabelPage> {
     return GestureDetector(
       onTap: () {
         setState(() {
+          if (widget.labelList.length <= 1) {
+            showTagRemoveWarringDialog(context);
+            return;
+          }
+          removeTag(index);
           widget.labelList.removeAt(index);
           widget.updateList(widget.labelList);
         });
@@ -183,5 +192,35 @@ class _AddLabelPageState extends State<AddLabelPage> {
         icon: Icons.close,
       ),
     );
+  }
+
+  void showTagRemoveWarringDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: Text('태그를 모두 지울순 없습니다.'),
+          actions: [
+            Center(
+              child: TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('확인'),
+              ),
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  void removeTag(int index) {
+    BlocProvider.of<TagBloc>(context)
+        .add(DeleteTagEvent(widget.labelList[index]));
+  }
+
+  void createTag(Tag tag) {
+    BlocProvider.of<TagBloc>(context).add(CreateTagEvent(tag));
   }
 }

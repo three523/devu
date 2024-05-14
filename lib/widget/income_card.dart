@@ -22,39 +22,39 @@ class IncomeCard extends StatelessWidget {
         child: Column(
           children: [
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: money.tagList.isEmpty
+                  ? CrossAxisAlignment.center
+                  : CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(isExpense(money.value)
-                    ? Icons.south_east_sharp
-                    : Icons.north_west_sharp),
+                Icon(
+                  isExpense(money.value)
+                      ? Icons.south_east_sharp
+                      : Icons.north_west_sharp,
+                  size: 16,
+                ),
                 SizedBox(
                   width: 4,
                 ),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(money.title),
+                      Container(
+                        child: Text(
+                          money.title,
+                          style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              height: 1.5,
+                              leadingDistribution:
+                                  TextLeadingDistribution.even),
+                        ),
+                      ),
                       SizedBox(
                         height: 2,
                       ),
-                      if (money.tagList.isNotEmpty)
-                        Container(
-                          height: 26,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              for (int i = 0; i < money.tagList.length; i++)
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 4.0),
-                                  child: LabelWidget(money.tagList[i].name,
-                                      Color(money.tagList[i].color)),
-                                ),
-                            ],
-                          ),
-                        )
                     ],
                   ),
                 ),
@@ -67,6 +67,62 @@ class IncomeCard extends StatelessWidget {
                 ),
               ],
             ),
+            // if (money.tagList.isNotEmpty)
+            //   Row(
+            //     children: [
+            //       SizedBox(
+            //         width: 20,
+            //       ),
+            //       Expanded(
+            //         child: SizedBox(
+            //           height: 26,
+            //           child: ListView.builder(
+            //               shrinkWrap: true,
+            //               itemCount: money.tagList.length,
+            //               scrollDirection: Axis.horizontal,
+            //               itemBuilder: ((context, index) {
+            //                 return Padding(
+            //                   padding: const EdgeInsets.only(right: 4.0),
+            //                   child: LabelWidget(money.tagList[index].name,
+            //                       Color(money.tagList[index].color)),
+            //                 );
+            //               })),
+            //         ),
+            //       ),
+            //     ],
+            //   )
+            Wrap(
+              direction: Axis.horizontal,
+              alignment: WrapAlignment.start,
+              spacing: 8.0,
+              runSpacing: 4.0,
+              children: [
+                for (int i = 0; i < money.tagList.length; i++)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 4.0),
+                    child: LabelWidget(
+                        money.tagList[i].name, Color(money.tagList[i].color)),
+                  ),
+              ],
+            ),
+            // Container(
+            //   height: 26,
+            //   width: double.infinity,
+            //   child: Row(
+            //     mainAxisSize: MainAxisSize.min,
+            //     children: [
+            //       SizedBox(
+            //         width: 20.0,
+            //       ),
+            //       for (int i = 0; i < money.tagList.length; i++)
+            //         Padding(
+            //           padding: const EdgeInsets.only(right: 4.0),
+            //           child: LabelWidget(money.tagList[i].name,
+            //               Color(money.tagList[i].color)),
+            //         ),
+            //     ],
+            //   ),
+            // )
           ],
         ),
       ),
