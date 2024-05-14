@@ -91,19 +91,25 @@ class IncomeCard extends StatelessWidget {
             //       ),
             //     ],
             //   )
-            Wrap(
-              direction: Axis.horizontal,
-              alignment: WrapAlignment.start,
-              spacing: 8.0,
-              runSpacing: 4.0,
-              children: [
-                for (int i = 0; i < money.tagList.length; i++)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 4.0),
-                    child: LabelWidget(
-                        money.tagList[i].name, Color(money.tagList[i].color)),
-                  ),
-              ],
+            Container(
+              width: double.infinity,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 20),
+                child: Wrap(
+                  direction: Axis.horizontal,
+                  alignment: WrapAlignment.start,
+                  spacing: 8.0,
+                  runSpacing: 4.0,
+                  children: [
+                    for (int i = 0; i < money.tagList.length; i++)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 4.0),
+                        child: LabelWidget(money.tagList[i].name,
+                            Color(money.tagList[i].color)),
+                      ),
+                  ],
+                ),
+              ),
             ),
             // Container(
             //   height: 26,
