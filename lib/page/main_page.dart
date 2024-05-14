@@ -1,4 +1,5 @@
 import 'package:devu_app/data/model/expense_category.dart';
+import 'package:devu_app/data/model/expense_category_list.dart';
 import 'package:devu_app/data/model/tag.dart';
 import 'package:devu_app/data/repository/expense_repository.dart';
 import 'package:devu_app/data/resource.dart';
@@ -7,6 +8,7 @@ import 'package:devu_app/expense_event.dart';
 import 'package:devu_app/expense_state.dart';
 import 'package:devu_app/page/add_category_page.dart';
 import 'package:devu_app/page/add_expenses_page.dart';
+import 'package:devu_app/utils/extenstion.dart';
 import 'package:devu_app/widget/category_card.dart';
 import 'package:devu_app/widget/home_appbar.dart';
 import 'package:devu_app/widget/income_card.dart';
@@ -70,25 +72,40 @@ class _MainPageState extends State<MainPage> {
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding:
-                  const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
-              child: HomeAppBar(
-                '/addCategory',
-                () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                        builder: (context) => AddCategoryPage(currentDateTime)),
-                  );
-                },
-              ),
-            ),
+            // Padding(
+            //   padding:
+            //       const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
+            //   child: HomeAppBar(
+            //     '/addCategory',
+            //     () {
+            //       Navigator.of(context).push(
+            //         MaterialPageRoute(
+            //             builder: (context) => AddCategoryPage(currentDateTime)),
+            //       );
+            //     },
+            //   ),
+            // ),
             BlocBuilder<ExpenseBloc, ExpenseState>(
               builder: (context, state) {
                 if (state is ExpenseSucessState) {
                   return Expanded(
                     child: Column(
                       children: [
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              top: 16.0, left: 16.0, right: 16.0),
+                          child: HomeAppBar(
+                            '/addCategory',
+                            () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        AddCategoryPage(currentDateTime)),
+                              );
+                            },
+                            description: totalExpense(state.eventModel),
+                          ),
+                        ),
                         SizedBox(
                           width: double.infinity,
                           height: 175,
@@ -220,6 +237,12 @@ class _MainPageState extends State<MainPage> {
         ),
       ),
     );
+  }
+
+  String? totalExpense(ExpenseCategoryList categoryList) {
+    final totalExpense = categoryList.categoryList.fold(
+        0, (previousValue, element) => previousValue + element.belowMoeny);
+    return totalExpense.toPriceString() + '원';
   }
 
   void onPageViewChange(int page) {

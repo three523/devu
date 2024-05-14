@@ -7,9 +7,10 @@ import 'package:flutter/material.dart';
 
 class HomeAppBar extends StatelessWidget {
   String pageName;
+  String? description;
   Function pushRoute;
 
-  HomeAppBar(this.pageName, this.pushRoute);
+  HomeAppBar(this.pageName, this.pushRoute, {this.description});
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +36,7 @@ class HomeAppBar extends StatelessWidget {
                       width: 12,
                     ),
                     Text(
-                      '420,000원',
+                      description ?? '',
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     )
