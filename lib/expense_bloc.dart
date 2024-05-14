@@ -20,7 +20,6 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
     on<LoadByDayExpenseEvent>(
       (event, emit) {
         final expenseList = _expenseRepository.getExpensesByDate(event.time);
-        print("test: ${expenseList}");
         emit(ExpenseSucessState(expenseList));
       },
     );

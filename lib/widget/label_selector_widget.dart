@@ -1,8 +1,12 @@
 import 'package:devu_app/data/model/tag.dart';
 import 'package:devu_app/data/resource.dart';
 import 'package:devu_app/page/add_label_page.dart';
+import 'package:devu_app/tag_bloc.dart';
+import 'package:devu_app/tag_event.dart';
+import 'package:devu_app/tag_state.dart';
 import 'package:devu_app/widget/label_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LabelSelectorWidget extends StatefulWidget {
   Function(List<Tag>)? onSelecteds;
@@ -16,55 +20,68 @@ class LabelSelectorWidget extends StatefulWidget {
 }
 
 class _LabelSelectorWidgetState extends State<LabelSelectorWidget> {
-  List<Tag> labelList = [
-    Tag('예금', Colors.red.value),
-    Tag('장기체', Colors.deepOrange.value),
-    Tag('미국ETF', Colors.green.value),
-  ];
+  // List<Tag> labelList = [
+  //   Tag('예금', Colors.red.value),
+  //   Tag('장기체', Colors.deepOrange.value),
+  //   Tag('미국ETF', Colors.green.value),
+  // ];
+
+  @override
+  void initState() {
+    super.initState();
+
+    BlocProvider.of<TagBloc>(context).add(GetTagEvent());
+  }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        showLabelSelectDialog(context);
-      },
-      child: Container(
-        height: 40.0,
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: Colors.black,
-          ),
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 12.0),
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
+    return BlocBuilder<TagBloc, TagState>(builder: (context, state) {
+      if (state is TagSucessState)
+        return GestureDetector(
+          onTap: () {
+            showLabelSelectDialog(context, state.tagList);
+          },
+          child: Container(
+            height: 40.0,
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Colors.black,
+              ),
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Row(
-                      children: [
-                        for (int i = 0; i < widget.selectedList.length; i++)
-                          getSelectedLabelWidgett(i, context, setState)
-                      ],
+                    padding: const EdgeInsets.only(left: 12.0),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Row(
+                          children: [
+                            for (int i = 0; i < widget.selectedList.length; i++)
+                              getSelectedLabelWidgett(i, context, setState)
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
+                Icon(Icons.keyboard_arrow_down),
+              ],
             ),
-            Icon(Icons.keyboard_arrow_down),
-          ],
-        ),
-      ),
-    );
+          ),
+        );
+      else {
+        return Container();
+      }
+    });
   }
 
-  void showLabelSelectDialog(BuildContext context) {
+  void showLabelSelectDialog(BuildContext context, List<Tag> tagList) {
     showDialog(
       context: context,
       builder: (context) {
@@ -90,8 +107,8 @@ class _LabelSelectorWidgetState extends State<LabelSelectorWidget> {
                         spacing: 8.0,
                         runSpacing: 4.0,
                         children: [
-                          for (int i = 0; i < labelList.length; i++)
-                            getLabelWidget(i, context, dialogSetState)
+                          for (int i = 0; i < tagList.length; i++)
+                            getLabelWidget(tagList[i], context, dialogSetState)
                         ],
                       ),
                     ),
@@ -106,22 +123,22 @@ class _LabelSelectorWidgetState extends State<LabelSelectorWidget> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => AddLabelPage(
-                                labelList,
+                                tagList,
                                 (newLabelList) {
                                   dialogSetState(
                                     () {
                                       setState(() {
-                                        labelList = newLabelList;
-                                        List<Tag> newSelectedList = widget
-                                            .selectedList
-                                            .where((element) =>
-                                                labelList.contains(element))
-                                            .toList();
-                                        widget.selectedList = newSelectedList;
-                                        if (widget.onSelecteds != null) {
-                                          widget.onSelecteds!(
-                                              widget.selectedList);
-                                        }
+                                        // labelList = newLabelList;
+                                        // List<Tag> newSelectedList = widget
+                                        //     .selectedList
+                                        //     .where((element) =>
+                                        //         labelList.contains(element))
+                                        //     .toList();
+                                        // widget.selectedList = newSelectedList;
+                                        // if (widget.onSelecteds != null) {
+                                        //   widget.onSelecteds!(
+                                        //       widget.selectedList);
+                                        // }
                                       });
                                     },
                                   );
@@ -129,7 +146,7 @@ class _LabelSelectorWidgetState extends State<LabelSelectorWidget> {
                               ),
                             ),
                           );
-                          labelList = newLabelList;
+                          // labelList = newLabelList;
                         },
                         child: Text(
                           '태그 생성하러가기 >',
@@ -185,7 +202,6 @@ class _LabelSelectorWidgetState extends State<LabelSelectorWidget> {
             setState(() {
               widget.selectedList.removeAt(index);
               if (widget.onSelecteds != null) {
-                print('label seletedWidget:${widget.onSelecteds}');
                 widget.onSelecteds!(widget.selectedList);
               }
             });
@@ -197,9 +213,9 @@ class _LabelSelectorWidgetState extends State<LabelSelectorWidget> {
     );
   }
 
-  Widget getLabelWidget(int index, BuildContext context, Function refresh) {
-    final String name = labelList[index].name;
-    final Color color = Color(labelList[index].color);
+  Widget getLabelWidget(Tag tag, BuildContext context, Function refresh) {
+    final String name = tag.name;
+    final Color color = Color(tag.color);
 
     final isSelected =
         widget.selectedList.any((element) => element.name == name);
@@ -212,10 +228,9 @@ class _LabelSelectorWidgetState extends State<LabelSelectorWidget> {
               widget.selectedList
                   .removeWhere((element) => element.name == name);
             } else {
-              widget.selectedList.add(labelList[index]);
+              widget.selectedList.add(tag);
             }
             if (widget.onSelecteds != null) {
-              print('label:${widget.onSelecteds}');
               widget.onSelecteds!(widget.selectedList);
             }
           });

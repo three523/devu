@@ -154,6 +154,18 @@ class ExpenseRepository {
     return DateTime(dateTime.year, dateTime.month);
   }
 
+  List<Tag> getTagList() {
+    return tagBox.values.toList();
+  }
+
+  void createTag(Tag tag) {
+    tagBox.put(tag.name, tag);
+  }
+
+  void removeTag(Tag tag) {
+    tagBox.delete(tag.name);
+  }
+
   // int dateTimeToUnixTimestamp(DateTime dateTime) {
   //   return dateTime.withoutTime.millisecondsSinceEpoch ~/ 1000;
   // }

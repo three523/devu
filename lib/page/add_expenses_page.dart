@@ -1,5 +1,4 @@
 import 'package:devu_app/data/model/expense_category.dart';
-import 'package:devu_app/data/model/expense_category_list.dart';
 import 'package:devu_app/data/model/money.dart';
 import 'package:devu_app/data/model/tag.dart';
 import 'package:devu_app/data/resource.dart';
@@ -9,11 +8,8 @@ import 'package:devu_app/expense_state.dart';
 import 'package:devu_app/utils/extenstion.dart';
 import 'package:devu_app/utils/utils.dart';
 import 'package:devu_app/widget/label_selector_widget.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:table_calendar/table_calendar.dart';
 import 'package:uuid/uuid.dart';
 
 enum RecodeType { income, expenses }
@@ -237,7 +233,7 @@ class _AddExpensesPageState extends State<AddExpensesPage> {
               }
               price = isExpenses() ? price : -price;
               final category = widget.expenseCategory;
-              if (category != null && isOutOfExpenses() == null && false) {
+              if (category != null && isOutOfExpenses() == null) {
                 BlocProvider.of<ExpenseBloc>(context).add(CreateExpenseEvent(
                     category,
                     Money(
@@ -250,7 +246,6 @@ class _AddExpensesPageState extends State<AddExpensesPage> {
                 Navigator.of(context).pop();
               } else {
                 //TODO: 카테고리 선택 된 경우 에러처리
-                print('Add Expense: $tagList');
               }
             },
             child: Text('저장하기'),
