@@ -1,12 +1,17 @@
+import 'package:devu_app/expense_bloc.dart';
+import 'package:devu_app/expense_event.dart';
 import 'package:devu_app/widget/year_month_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 
 class DateSwipeWidget extends StatefulWidget {
-  DateTime currentDate = DateTime.now();
+  DateTime currentDate;
   MainAxisAlignment alignment;
+  Function(DateTime)? onChangeDate;
 
-  DateSwipeWidget({MainAxisAlignment? alignment})
+  DateSwipeWidget(this.currentDate,
+      {MainAxisAlignment? alignment, this.onChangeDate})
       : alignment = alignment ?? MainAxisAlignment.start;
   @override
   State<DateSwipeWidget> createState() => _DateSwipeWidgetState();
@@ -36,14 +41,24 @@ class _DateSwipeWidgetState extends State<DateSwipeWidget> {
       final tempCurrentDate = widget.currentDate;
       widget.currentDate =
           DateTime(tempCurrentDate.year, tempCurrentDate.month - 1);
+      if (widget.onChangeDate != null) {
+        widget.onChangeDate!(widget.currentDate);
+      }
     });
   }
 
   void nextMonth() {
     setState(() {
       final tempCurrentDate = widget.currentDate;
+      if (tempCurrentDate.month == DateTime.now().month &&
+          tempCurrentDate.year == DateTime.now().year) {
+        return;
+      }
       widget.currentDate =
           DateTime(tempCurrentDate.year, tempCurrentDate.month + 1);
+      if (widget.onChangeDate != null) {
+        widget.onChangeDate!(widget.currentDate);
+      }
     });
   }
 
@@ -55,6 +70,9 @@ class _DateSwipeWidgetState extends State<DateSwipeWidget> {
       if (date != null) {
         setState(() {
           widget.currentDate = DateTime(date.year, date.month);
+          if (widget.onChangeDate != null) {
+            widget.onChangeDate!(widget.currentDate);
+          }
         });
       }
     });

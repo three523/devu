@@ -3,16 +3,11 @@ import 'dart:ffi';
 import 'package:devu_app/data/model/asset_category.dart';
 import 'package:devu_app/data/model/expense_category.dart';
 import 'package:devu_app/data/model/expense_category_list.dart';
-import 'package:devu_app/data/model/filter_data.dart';
-import 'package:devu_app/data/model/day_expense.dart';
 import 'package:devu_app/data/model/money.dart';
-import 'package:devu_app/data/model/tag.dart';
-import 'package:devu_app/utils/extenstion.dart';
 import 'package:devu_app/utils/utils.dart';
-import 'package:devu_app/widget/asset_card.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:uuid/uuid.dart';
 
 enum FilterType { category, label }
 
@@ -20,22 +15,8 @@ class ExpenseRepository {
   final Box<AssetCategory> assetBox = Hive.box<AssetCategory>('AssetCategory');
   final Box<ExpenseCategoryList> expenseBox =
       Hive.box<ExpenseCategoryList>('ExpenseCategory');
-  final Box<Tag> tagBox = Hive.box<Tag>('Tag');
 
-  ExpenseRepository() {
-    _init();
-  }
-
-  void _init() {
-    if (tagBox.keys.isEmpty) {
-      Map<String, Tag> tagList = {
-        '충동구매': Tag('충동구매', Colors.red.value),
-        '고정수입': Tag('고정수입', Colors.green.value),
-        '예금': Tag('저축', Colors.blue.value),
-      };
-      tagBox.putAll(tagList);
-    }
-  }
+  ExpenseRepository();
 
   Future<void> createExpense(
       DateTime date, ExpenseCategory category, Money newExpense) async {
@@ -125,15 +106,8 @@ class ExpenseRepository {
     final int key = dateTimeToUnixTimestamp(firstDayOfMonth);
     final ExpenseCategoryList? categoryList = expenseBox.get(key);
     if (categoryList != null) {
-      print(
-          'delete category:${deleteCategory.title} ${categoryList.categoryList.length}');
-      for (int i = 0; i < categoryList.categoryList.length; i++) {
-        print('uuid: ${categoryList.categoryList[i].id}');
-      }
       categoryList.categoryList
           .removeWhere((category) => deleteCategory.id == category.id);
-      print(
-          'after :${deleteCategory.title} ${categoryList.categoryList.length}');
       await expenseBox.put(key, categoryList);
     }
   }
@@ -143,34 +117,67 @@ class ExpenseRepository {
     return categoryList;
   }
 
+  List<dynamic> getAllCategoryKey() {
+    return expenseBox.keys.toList();
+  }
+
   ExpenseCategoryList getExpensesByDate(DateTime date) {
     final DateTime firstDayOfMonth = getFirstDayOfMonth(date);
     final int key = dateTimeToUnixTimestamp(firstDayOfMonth);
     final ExpenseCategoryList? categoryList = expenseBox.get(key);
+    if (categoryList == null) {
+      final allCategoryKey = getAllCategoryKey();
+      if (allCategoryKey.isEmpty) {
+        return ExpenseCategoryList(key, []);
+      }
+      allCategoryKey.sort((a, b) {
+        if (a is int && b is int) {
+          if (a <= b) {
+            return -1;
+          } else {
+            return 1;
+          }
+        } else {
+          return -1;
+        }
+      });
+      final previousCategoryList = expenseBox.get(allCategoryKey.last);
+      if (previousCategoryList != null &&
+          previousCategoryList.categoryList.isNotEmpty) {
+        ExpenseCategoryList newCategoryList;
+        newCategoryList = copyCategoryList(
+            firstDayOfMonth, previousCategoryList.categoryList);
+        createCategoryList(newCategoryList);
+        return newCategoryList;
+      }
+    }
+
     return categoryList ?? ExpenseCategoryList(key, []);
+  }
+
+  void createCategoryList(ExpenseCategoryList categoryList) {
+    final DateTime date = unixTimestampToDateTime(categoryList.timeStamp);
+    final DateTime firstDayOfMonth = getFirstDayOfMonth(date);
+    final int key = dateTimeToUnixTimestamp(firstDayOfMonth);
+    expenseBox.put(key, categoryList);
+  }
+
+  // expenseList, id 만 새롭게 생성
+  ExpenseCategoryList copyCategoryList(
+      DateTime date, List<ExpenseCategory> categoryList) {
+    ExpenseCategoryList newCategoryList =
+        ExpenseCategoryList(dateTimeToUnixTimestamp(date), []);
+    for (int i = 0; i < categoryList.length; i++) {
+      ExpenseCategory newCategory = categoryList[i].copyWith(
+          id: Uuid().v4(),
+          timeStamp: dateTimeToUnixTimestamp(date),
+          expenseList: []);
+      newCategoryList.categoryList.add(newCategory);
+    }
+    return newCategoryList;
   }
 
   DateTime getFirstDayOfMonth(DateTime dateTime) {
     return DateTime(dateTime.year, dateTime.month);
   }
-
-  List<Tag> getTagList() {
-    return tagBox.values.toList();
-  }
-
-  void createTag(Tag tag) {
-    tagBox.put(tag.name, tag);
-  }
-
-  void removeTag(Tag tag) {
-    tagBox.delete(tag.name);
-  }
-
-  // int dateTimeToUnixTimestamp(DateTime dateTime) {
-  //   return dateTime.withoutTime.millisecondsSinceEpoch ~/ 1000;
-  // }
-
-  // DateTime unixTimestampToDateTime(int timestamp) {
-  //   return DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
-  // }
 }

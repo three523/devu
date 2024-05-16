@@ -104,12 +104,12 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: IncomeCard(
                     Money(
-                      id: '',
-                      categoryId: '',
-                      title: '',
-                      date: DateTime.now(),
-                      value: 10000,
-                      tagList: [],
+                      '',
+                      '',
+                      '',
+                      DateTime.now(),
+                      10000,
+                      [],
                     ),
                   ),
                 );

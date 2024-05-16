@@ -5,14 +5,24 @@ part 'money.g.dart';
 
 @HiveType(typeId: 0)
 class Money {
-  Money({
-    required this.id,
-    required this.title,
-    required this.categoryId,
-    required this.date,
-    required this.value,
-    required this.tagList,
-  });
+  Money(
+    this.id,
+    this.title,
+    this.categoryId,
+    this.date,
+    this.value,
+    this.tagList,
+  );
+
+  Money copyWith(
+          {String? id,
+          String? title,
+          String? categoryId,
+          DateTime? date,
+          int? value,
+          List<Tag>? tagList}) =>
+      Money(id ?? this.id, title ?? this.title, categoryId ?? this.categoryId,
+          date ?? this.date, value ?? this.value, tagList ?? this.tagList);
 
   @HiveField(0)
   String id;

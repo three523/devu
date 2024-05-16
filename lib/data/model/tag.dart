@@ -6,6 +6,9 @@ part 'tag.g.dart';
 class Tag {
   Tag(this.name, this.color);
 
+  Tag copyWith(String? name, int? color) =>
+      Tag(name ?? this.name, color ?? this.color);
+
   @HiveField(0)
   String name;
 

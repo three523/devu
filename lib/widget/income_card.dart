@@ -136,7 +136,6 @@ class IncomeCard extends StatelessWidget {
   }
 
   bool isExpense(int money) {
-    print(this.money.tagList);
     return money >= 0;
   }
 }
