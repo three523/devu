@@ -9,6 +9,7 @@ import 'package:devu_app/expense_state.dart';
 import 'package:devu_app/page/add_category_page.dart';
 import 'package:devu_app/page/add_expenses_page.dart';
 import 'package:devu_app/utils/extenstion.dart';
+import 'package:devu_app/utils/utils.dart';
 import 'package:devu_app/widget/category_card.dart';
 import 'package:devu_app/widget/home_appbar.dart';
 import 'package:devu_app/widget/income_card.dart';
@@ -16,11 +17,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MainPage extends StatefulWidget {
-  List<Tag> labelList = [
-    Tag('예금', Colors.red.value),
-    Tag('정기', Colors.blue.value),
-    Tag('추가', Colors.green.value)
-  ];
   // final ExpenseRepository repository;
 
   MainPage();
@@ -103,7 +99,14 @@ class _MainPageState extends State<MainPage> {
                                         AddCategoryPage(currentDateTime)),
                               );
                             },
+                            onChangeDate: (date) {
+                              currentDateTime = date;
+                              currentPageIndex = 0;
+                              BlocProvider.of<ExpenseBloc>(context)
+                                  .add(LoadByDayExpenseEvent(date));
+                            },
                             description: totalExpense(state.eventModel),
+                            dateTime: currentDateTime,
                           ),
                         ),
                         SizedBox(
@@ -213,9 +216,16 @@ class _MainPageState extends State<MainPage> {
                             child: ListView.separated(
                               padding: EdgeInsetsDirectional.symmetric(
                                   vertical: 12.0),
-                              itemCount: getCategory()?.expenseList.length ?? 0,
+                              itemCount: state
+                                  .eventModel
+                                  .categoryList[currentPageIndex]
+                                  .expenseList
+                                  .length,
                               itemBuilder: (context, index) {
-                                return IncomeCard(category!.expenseList[index]);
+                                return IncomeCard(state
+                                    .eventModel
+                                    .categoryList[currentPageIndex]
+                                    .expenseList[index]);
                               },
                               separatorBuilder: (context, index) {
                                 return SizedBox(

@@ -168,7 +168,6 @@ class _LabelSelectorWidgetState extends State<LabelSelectorWidget> {
                             ),
                             backgroundColor: primaryColor),
                         onPressed: () {
-                          print('add taglist${widget.selectedList}');
                           if (widget.onSelecteds != null) {
                             widget.onSelecteds!(widget.selectedList);
                           }

@@ -184,7 +184,6 @@ class _AddExpensesPageState extends State<AddExpensesPage> {
             ),
             LabelSelectorWidget(
               onSelecteds: (newTagList) {
-                print('Add Expense: $newTagList');
                 tagList = newTagList;
               },
             ),
@@ -236,13 +235,8 @@ class _AddExpensesPageState extends State<AddExpensesPage> {
               if (category != null && isOutOfExpenses() == null) {
                 BlocProvider.of<ExpenseBloc>(context).add(CreateExpenseEvent(
                     category,
-                    Money(
-                        id: Uuid().v4().toString(),
-                        title: memoController.text,
-                        categoryId: category.id,
-                        date: DateTime.now(),
-                        value: price,
-                        tagList: tagList)));
+                    Money(Uuid().v4().toString(), memoController.text,
+                        category.id, DateTime.now(), price, tagList)));
                 Navigator.of(context).pop();
               } else {
                 //TODO: 카테고리 선택 된 경우 에러처리

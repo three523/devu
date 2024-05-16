@@ -16,6 +16,23 @@ class ExpenseCategory {
     this.tagList,
   );
 
+  ExpenseCategory copyWith(
+          {String? id,
+          String? title,
+          int? belowMoeny,
+          int? timeStamp,
+          List<Money>? expenseList,
+          String? memo,
+          List<Tag>? tagList}) =>
+      ExpenseCategory(
+          id ?? this.id,
+          title ?? this.title,
+          belowMoeny ?? this.belowMoeny,
+          timeStamp ?? this.timeStamp,
+          expenseList ?? this.expenseList,
+          memo ?? this.memo,
+          tagList ?? this.tagList);
+
   @HiveField(0)
   String id;
 

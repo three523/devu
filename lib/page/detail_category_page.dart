@@ -30,7 +30,7 @@ class DetailCategoryPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          DateSwipeWidget(),
+          DateSwipeWidget(DateTime.now()),
           Container(
             width: double.infinity,
             child: Center(
@@ -53,12 +53,12 @@ class DetailCategoryPage extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return IncomeCard(
                     Money(
-                      id: '',
-                      categoryId: '',
-                      title: '',
-                      date: DateTime.now(),
-                      value: 10000,
-                      tagList: [],
+                      '',
+                      '',
+                      '',
+                      DateTime.now(),
+                      10000,
+                      [],
                     ),
                   );
                 },

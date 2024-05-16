@@ -10,6 +10,11 @@ class ExpenseCategoryList {
     this.categoryList,
   );
 
+  ExpenseCategoryList copyWith(
+          {int? timeStamp, List<ExpenseCategory>? categoryList}) =>
+      ExpenseCategoryList(
+          timeStamp ?? this.timeStamp, categoryList ?? this.categoryList);
+
   @HiveField(0)
   int timeStamp;
 

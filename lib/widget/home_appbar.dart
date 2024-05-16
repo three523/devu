@@ -7,10 +7,13 @@ import 'package:flutter/material.dart';
 
 class HomeAppBar extends StatelessWidget {
   String pageName;
+  DateTime? dateTime;
   String? description;
+  Function(DateTime)? onChangeDate;
   Function pushRoute;
 
-  HomeAppBar(this.pageName, this.pushRoute, {this.description});
+  HomeAppBar(this.pageName, this.pushRoute,
+      {this.dateTime, this.description, this.onChangeDate});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +27,10 @@ class HomeAppBar extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                DateSwipeWidget(),
+                DateSwipeWidget(
+                  dateTime ?? DateTime.now(),
+                  onChangeDate: onChangeDate,
+                ),
                 Row(
                   children: [
                     Text(

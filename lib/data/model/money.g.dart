@@ -17,12 +17,12 @@ class MoneyAdapter extends TypeAdapter<Money> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Money(
-      id: fields[0] as String,
-      title: fields[1] as String,
-      categoryId: fields[2] as String,
-      date: fields[3] as DateTime,
-      value: fields[4] as int,
-      tagList: fields[5] == null ? [] : (fields[5] as List).cast<Tag>(),
+      fields[0] as String,
+      fields[1] as String,
+      fields[2] as String,
+      fields[3] as DateTime,
+      fields[4] as int,
+      fields[5] == null ? [] : (fields[5] as List).cast<Tag>(),
     );
   }
 

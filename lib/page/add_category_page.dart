@@ -29,8 +29,6 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
   @override
   void initState() {
     super.initState();
-
-    print('테스트: ${widget.categoryDateTime.day}');
     BlocProvider.of<ExpenseBloc>(context)
         .add(LoadByDayExpenseEvent(widget.categoryDateTime));
   }
@@ -69,7 +67,6 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
   }
 
   Widget getListViewItem(ExpenseCategoryList categoryList, int index) {
-    print(index);
     if (index == 0) {
       int totalBelowMoney = categoryList.categoryList.fold(
           0, (previousValue, element) => previousValue + element.belowMoeny);
@@ -155,7 +152,6 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
                     if (textEditingController.text.isEmpty == false) {
                       final title = textEditingController.text;
                       final state = BlocProvider.of<ExpenseBloc>(context).state;
-                      print(state);
                       if (state is ExpenseSucessState &&
                           !state.eventModel.categoryList
                               .any((element) => element.title == title)) {
