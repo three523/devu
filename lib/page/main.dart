@@ -1,10 +1,12 @@
-import 'package:devu_app/data/model/asset_category.dart';
+import 'package:devu_app/asset_bloc.dart';
+import 'package:devu_app/data/model/asset.dart';
 import 'package:devu_app/data/model/expense_category.dart';
 import 'package:devu_app/data/model/expense_category_list.dart';
 import 'package:devu_app/data/model/filter_data.dart';
 import 'package:devu_app/data/model/day_expense.dart';
 import 'package:devu_app/data/model/money.dart';
 import 'package:devu_app/data/model/tag.dart';
+import 'package:devu_app/data/repository/asset_repository.dart';
 import 'package:devu_app/data/repository/expense_repository.dart';
 import 'package:devu_app/data/repository/tag_repository.dart';
 import 'package:devu_app/expense_bloc.dart';
@@ -18,12 +20,12 @@ import 'package:table_calendar/table_calendar.dart';
 
 Future<void> main() async {
   await Hive.initFlutter();
-  Hive.registerAdapter(AssetCategoryAdapter());
+  Hive.registerAdapter(AssetAdapter());
   Hive.registerAdapter(ExpenseCategoryListAdapter());
   Hive.registerAdapter(ExpenseCategoryAdapter());
   Hive.registerAdapter(MoneyAdapter());
   Hive.registerAdapter(TagAdapter());
-  await Hive.openBox<AssetCategory>('AssetCategory');
+  await Hive.openBox<Asset>('Asset');
   await Hive.openBox<ExpenseCategoryList>('ExpenseCategory');
   await Hive.openBox<Tag>('Tag');
   runApp(const MyApp());
@@ -39,6 +41,7 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (_) => ExpenseBloc(ExpenseRepository())),
         BlocProvider(create: (_) => TagBloc(TagRepository())),
+        BlocProvider(create: (_) => AssetBloc(AssetRepository())),
       ],
       child: MaterialApp(
           title: 'Flutter Demo',

@@ -1,18 +1,13 @@
-import 'dart:ffi';
-
-import 'package:devu_app/data/model/asset_category.dart';
 import 'package:devu_app/data/model/expense_category.dart';
 import 'package:devu_app/data/model/expense_category_list.dart';
 import 'package:devu_app/data/model/money.dart';
 import 'package:devu_app/utils/utils.dart';
-import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
 
 enum FilterType { category, label }
 
 class ExpenseRepository {
-  final Box<AssetCategory> assetBox = Hive.box<AssetCategory>('AssetCategory');
   final Box<ExpenseCategoryList> expenseBox =
       Hive.box<ExpenseCategoryList>('ExpenseCategory');
 
