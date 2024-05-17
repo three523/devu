@@ -1,22 +1,22 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'asset_category.dart';
+part of 'asset.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class AssetCategoryAdapter extends TypeAdapter<AssetCategory> {
+class AssetAdapter extends TypeAdapter<Asset> {
   @override
   final int typeId = 5;
 
   @override
-  AssetCategory read(BinaryReader reader) {
+  Asset read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return AssetCategory(
+    return Asset(
       fields[0] as String,
       fields[1] as String,
       fields[2] as int,
@@ -30,7 +30,7 @@ class AssetCategoryAdapter extends TypeAdapter<AssetCategory> {
   }
 
   @override
-  void write(BinaryWriter writer, AssetCategory obj) {
+  void write(BinaryWriter writer, Asset obj) {
     writer
       ..writeByte(9)
       ..writeByte(0)
@@ -46,7 +46,7 @@ class AssetCategoryAdapter extends TypeAdapter<AssetCategory> {
       ..writeByte(5)
       ..write(obj.goalTimestamp)
       ..writeByte(6)
-      ..write(obj.assetList)
+      ..write(obj.incomeList)
       ..writeByte(7)
       ..write(obj.memo)
       ..writeByte(8)
@@ -59,7 +59,7 @@ class AssetCategoryAdapter extends TypeAdapter<AssetCategory> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is AssetCategoryAdapter &&
+      other is AssetAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

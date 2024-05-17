@@ -7,7 +7,6 @@ import 'package:devu_app/utils/extenstion.dart';
 import 'package:devu_app/utils/utils.dart';
 import 'package:devu_app/widget/category_card.dart';
 import 'package:dotted_border/dotted_border.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';

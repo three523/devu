@@ -146,7 +146,7 @@ class _AddLabelPageState extends State<AddLabelPage> {
     if (validate(name, color) && !isExisLabel(name)) {
       setState(() {
         createTag(Tag(name, color!.value));
-        widget.labelList.add(Tag(name, color!.value));
+        widget.labelList.add(Tag(name, color.value));
         widget.updateList(widget.labelList);
       });
     }

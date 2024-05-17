@@ -1,15 +1,15 @@
+import 'package:devu_app/data/model/asset.dart';
 import 'package:devu_app/data/resource.dart';
+import 'package:devu_app/utils/extenstion.dart';
+import 'package:devu_app/utils/utils.dart';
 import 'package:devu_app/widget/label_widget.dart';
 import 'package:flutter/material.dart';
 
 class AssetDetailCard extends StatelessWidget {
-  List<String> labelList = ['저축', '배당금', '예금'];
-
+  Asset asset;
   List<Color> gradientColors = [secondaryColor, primary200Color];
 
-  final double filePercent = 25;
-
-  final int dDay = 255;
+  AssetDetailCard(this.asset);
 
   @override
   Widget build(BuildContext context) {
@@ -58,13 +58,14 @@ class AssetDetailCard extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  for (int i = 0; i < labelList.length; i++)
+                  for (int i = 0; i < asset.tagList.length; i++)
                     Padding(
                       padding: const EdgeInsets.all(4.0),
                       child: LabelWidget(
-                        labelList[i],
-                        Colors.redAccent,
-                        foregroundColor: Colors.white,
+                        asset.tagList[i].name,
+                        Color(asset.tagList[i].color),
+                        foregroundColor: getTextColorForBackground(
+                            Color(asset.tagList[i].color)),
                       ),
                     )
                 ],
@@ -113,7 +114,7 @@ class AssetDetailCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '2,470,000원',
+                    totalMoeny().toPriceString(),
                     style: TextStyle(
                       fontSize: 30.0,
                       fontWeight: FontWeight.w800,
@@ -134,7 +135,7 @@ class AssetDetailCard extends StatelessWidget {
               child: Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                child: Text('조급하지 말 것!'),
+                child: Text(asset.memo),
               ),
             ),
           ),
@@ -151,8 +152,8 @@ class AssetDetailCard extends StatelessWidget {
                         gradient: LinearGradient(
                           colors: gradientColors,
                           stops: [
-                            filePercent.round() / 100,
-                            filePercent.round() / 100,
+                            totalPersent() / 100,
+                            totalPersent() / 100,
                           ],
                           begin: Alignment.centerLeft,
                           end: Alignment.centerRight,
@@ -162,7 +163,7 @@ class AssetDetailCard extends StatelessWidget {
                 SizedBox(
                   width: 12.0,
                 ),
-                Text("${filePercent.round()}%"),
+                Text("${totalPersent()}%"),
               ],
             ),
           ),
@@ -175,7 +176,7 @@ class AssetDetailCard extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Text(
-                    'D - $dDay',
+                    'D - ${dDay()}',
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.white,
@@ -200,5 +201,25 @@ class AssetDetailCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  int totalMoeny() {
+    return asset.incomeList
+        .fold(0, (previousValue, element) => previousValue + element.value);
+  }
+
+  int totalPersent() {
+    final goalMoney = asset.goalMoney;
+    final totalIncomeMoney = totalMoeny();
+    if (totalMoeny() == 0) {
+      return 0;
+    }
+    final totalPersent = (goalMoney / totalIncomeMoney) * 100;
+    return totalPersent.round();
+  }
+
+  int dDay() {
+    final endDate = unixTimestampToDateTime(asset.goalTimestamp);
+    return endDate.getDayDifference(DateTime.now());
   }
 }

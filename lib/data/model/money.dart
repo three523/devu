@@ -6,23 +6,9 @@ part 'money.g.dart';
 @HiveType(typeId: 0)
 class Money {
   Money(
-    this.id,
-    this.title,
-    this.categoryId,
-    this.date,
-    this.value,
-    this.tagList,
-  );
-
-  Money copyWith(
-          {String? id,
-          String? title,
-          String? categoryId,
-          DateTime? date,
-          int? value,
-          List<Tag>? tagList}) =>
-      Money(id ?? this.id, title ?? this.title, categoryId ?? this.categoryId,
-          date ?? this.date, value ?? this.value, tagList ?? this.tagList);
+      this.id, this.title, this.categoryId, this.date, this.value, this.tagList,
+      {bool? isInterest})
+      : isInterest = isInterest ?? false;
 
   @HiveField(0)
   String id;
@@ -42,7 +28,10 @@ class Money {
   @HiveField(5, defaultValue: [])
   List<Tag> tagList;
 
+  @HiveField(6, defaultValue: false)
+  bool isInterest;
+
   @override
   String toString() =>
-      '{id: $id, title: $title, categoryId: $categoryId, date: $date, value: $value, tagList: $tagList}';
+      '{id: $id, title: $title, categoryId: $categoryId, date: $date, value: $value, tagList: $tagList, isInterest: $isInterest}';
 }

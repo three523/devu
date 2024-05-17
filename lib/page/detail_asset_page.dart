@@ -1,3 +1,7 @@
+import 'package:devu_app/asset_bloc.dart';
+import 'package:devu_app/asset_event.dart';
+import 'package:devu_app/asset_state.dart';
+import 'package:devu_app/data/model/asset.dart';
 import 'package:devu_app/data/model/money.dart';
 import 'package:devu_app/data/model/tag.dart';
 import 'package:devu_app/data/resource.dart';
@@ -8,11 +12,13 @@ import 'package:devu_app/widget/income_card.dart';
 import 'package:devu_app/widget/label_selector_widget.dart';
 import 'package:devu_app/widget/number_update_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:uuid/uuid.dart';
 
 class DetailAssetPage extends StatefulWidget {
-  String title;
+  Asset asset;
 
-  DetailAssetPage(this.title);
+  DetailAssetPage(this.asset);
 
   @override
   State<DetailAssetPage> createState() => _DetailAssetPageState();
@@ -24,11 +30,6 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
   List<Color> gradientColors = [primaryColor, primary200Color];
   double filePercent = 25.0;
   double triangleSize = 12.0;
-  List<Tag> labelList = [
-    Tag('예금', Colors.red.value),
-    Tag('정기', Colors.blue.value),
-    Tag('추가', Colors.green.value)
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -89,111 +90,107 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
             ),
           ),
         ],
-        title: Text(widget.title),
+        title: Text(widget.asset.title),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.separated(
-              itemCount: 5,
-              itemBuilder: (context, index) {
-                if (index == 0) {
-                  return getHeader();
-                }
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: IncomeCard(
-                    Money(
-                      '',
-                      '',
-                      '',
-                      DateTime.now(),
-                      10000,
-                      [],
-                    ),
-                  ),
-                );
-              },
-              separatorBuilder: (context, index) {
-                return SizedBox(
-                  height: 12,
-                );
-              },
-            ),
-          ),
-          Container(
-            color: secondaryColor,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 12.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '총 수익',
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white),
-                            ),
-                            Text(
-                              '2024.04.11 기준',
-                              style: TextStyle(color: Colors.white),
-                            )
-                          ],
-                        ),
-                        Text(
-                          '45,000원',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SafeArea(
-                    child: Container(
-                      height: 24,
-                      child: Stack(
-                        alignment: Alignment.bottomLeft,
+      body: BlocBuilder<AssetBloc, AssetState>(builder: (context, state) {
+        return Column(
+          children: [
+            if (state is AssetLoadSuccessState)
+              Expanded(
+                child: ListView.separated(
+                  itemCount: widget.asset.incomeList.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index == 0) {
+                      return getHeader();
+                    }
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: IncomeCard(
+                        widget.asset.incomeList[index - 1],
+                      ),
+                    );
+                  },
+                  separatorBuilder: (context, index) {
+                    return SizedBox(
+                      height: 12,
+                    );
+                  },
+                ),
+              ),
+            Container(
+              color: secondaryColor,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Container(
-                            height: 8,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(6),
-                              gradient: LinearGradient(
-                                colors: gradientColors,
-                                stops: [
-                                  filePercent.round() / 100,
-                                  filePercent.round() / 100,
-                                ],
-                                begin: Alignment.centerLeft,
-                                end: Alignment.centerRight,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '총 수익',
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white),
                               ),
+                              Text(
+                                '2024.04.11 기준',
+                                style: TextStyle(color: Colors.white),
+                              )
+                            ],
+                          ),
+                          Text(
+                            '45,000원',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.white,
                             ),
                           ),
-                          getTriangle(25, '3.4%', Colors.red, triangleSize),
-                          getTriangle(
-                              70, '7%', Colors.yellowAccent, triangleSize),
                         ],
                       ),
                     ),
-                  ),
-                ],
+                    SafeArea(
+                      child: Container(
+                        height: 24,
+                        child: Stack(
+                          alignment: Alignment.bottomLeft,
+                          children: [
+                            Container(
+                              height: 8,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(6),
+                                gradient: LinearGradient(
+                                  colors: gradientColors,
+                                  stops: [
+                                    filePercent.round() / 100,
+                                    filePercent.round() / 100,
+                                  ],
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                ),
+                              ),
+                            ),
+                            getTriangle(25, '3.4%', Colors.red, triangleSize),
+                            getTriangle(
+                                70, '7%', Colors.yellowAccent, triangleSize),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          )
-        ],
-      ),
+            )
+          ],
+        );
+      }),
     );
   }
 
@@ -228,7 +225,7 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 12),
-          child: AssetDetailCard(),
+          child: AssetDetailCard(widget.asset),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -262,7 +259,10 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
   }
 
   void showAddIncomeDialog(BuildContext context, Function setState) {
+    List<bool> selectedIncomeTypes = [true, false];
+    List<Widget> incomeButton = [Text('저축'), Text('이자')];
     int income = 0;
+    List<Tag> tagList = [];
     showDialog(
       context: context,
       builder: (context) {
@@ -320,7 +320,37 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
                     height: 16,
                   ),
                   LabelSelectorWidget(
-                    onSelecteds: (_) {},
+                    selectedList: tagList,
+                    onSelecteds: (newTagList) {
+                      setState(
+                        () {
+                          tagList = newTagList;
+                        },
+                      );
+                    },
+                  ),
+                  SizedBox(
+                    height: 24.0,
+                  ),
+                  Text(
+                    '저축인지 이자인지 선택해주세요',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  ToggleButtons(
+                    onPressed: (index) {
+                      setState(
+                        () {
+                          for (int i = 0; i < selectedIncomeTypes.length; i++) {
+                            selectedIncomeTypes[i] = i == index;
+                          }
+                        },
+                      );
+                    },
+                    isSelected: selectedIncomeTypes,
+                    children: incomeButton,
                   ),
                   SizedBox(
                     height: 32.0,
@@ -333,7 +363,23 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
                             borderRadius: BorderRadius.circular(4.0),
                           ),
                           backgroundColor: primaryColor),
-                      onPressed: () {},
+                      onPressed: () {
+                        if (income == 0) {
+                          //TODO: 수입을 추가 안한경우 경고 표시
+                          return;
+                        }
+                        final money = Money(
+                            Uuid().v4(),
+                            selectedIncomeTypes[0] ? '저축' : '수익',
+                            widget.asset.id,
+                            DateTime.now(),
+                            income,
+                            tagList,
+                            isInterest: selectedIncomeTypes[1]);
+                        BlocProvider.of<AssetBloc>(context)
+                            .add(CreateIncomeEvent(widget.asset, money));
+                        Navigator.pop(context);
+                      },
                       child: Text(
                         '확인',
                         style: TextStyle(

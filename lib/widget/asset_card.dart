@@ -1,11 +1,15 @@
-import 'package:devu_app/data/model/tag.dart';
+import 'dart:math';
+
+import 'package:devu_app/data/model/asset.dart';
 import 'package:devu_app/data/resource.dart';
+import 'package:devu_app/utils/extenstion.dart';
+import 'package:devu_app/utils/utils.dart';
 import 'package:devu_app/widget/label_widget.dart';
 import 'package:flutter/material.dart';
 
 class AssetCard extends StatefulWidget {
-  List<Tag> labelList;
-  AssetCard(this.labelList);
+  Asset asset;
+  AssetCard(this.asset);
 
   @override
   State<AssetCard> createState() => _AssetCardState();
@@ -15,10 +19,6 @@ class _AssetCardState extends State<AssetCard> {
   final GlobalKey _globalKey = GlobalKey();
 
   List<Color> gradientColors = [secondaryColor, primary200Color];
-
-  final double filePercent = 25;
-
-  final int dDay = 255;
 
   final double todayIncomPersent = 8.8;
 
@@ -47,7 +47,7 @@ class _AssetCardState extends State<AssetCard> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Text(
-              '신혼 여행비',
+              widget.asset.title,
               style: TextStyle(
                 fontSize: 16.0,
                 fontWeight: FontWeight.w600,
@@ -71,7 +71,7 @@ class _AssetCardState extends State<AssetCard> {
                     ),
                   ),
                   Text(
-                    '500만원',
+                    formatToKoreanNumber(widget.asset.goalMoney),
                     style: TextStyle(
                       fontSize: 30.0,
                       fontWeight: FontWeight.w800,
@@ -83,7 +83,7 @@ class _AssetCardState extends State<AssetCard> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         LabelWidget(
-                          '7%',
+                          '${widget.asset.goalRate}%',
                           Colors.green,
                           foregroundColor: Colors.white,
                           padding:
@@ -105,14 +105,27 @@ class _AssetCardState extends State<AssetCard> {
                     padding: EdgeInsets.symmetric(vertical: 4),
                     child: Row(
                       children: [
-                        for (int i = 0; i < widget.labelList.length; i++)
+                        if (widget.asset.tagList.isEmpty)
                           Padding(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 4.0),
-                            child: LabelWidget(widget.labelList[i].name,
-                                Color(widget.labelList[i].color),
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 6, vertical: 2)),
+                            child: LabelWidget(
+                              '',
+                              Colors.transparent,
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 2),
+                            ),
+                          ),
+                        for (int i = 0; i < widget.asset.tagList.length; i++)
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 4.0),
+                            child: LabelWidget(
+                              widget.asset.tagList[i].name,
+                              Color(widget.asset.tagList[i].color),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 2),
+                            ),
                           )
                       ],
                     ),
@@ -137,8 +150,8 @@ class _AssetCardState extends State<AssetCard> {
                         gradient: LinearGradient(
                           colors: gradientColors,
                           stops: [
-                            filePercent.round() / 100,
-                            filePercent.round() / 100,
+                            getGoalPersent() / 100,
+                            getGoalPersent() / 100,
                           ],
                           begin: Alignment.centerLeft,
                           end: Alignment.centerRight,
@@ -148,7 +161,7 @@ class _AssetCardState extends State<AssetCard> {
                 SizedBox(
                   width: 12.0,
                 ),
-                Text("${filePercent.round()}%"),
+                Text("${getGoalPersent()}%"),
               ],
             ),
           ),
@@ -161,7 +174,7 @@ class _AssetCardState extends State<AssetCard> {
                 Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Text(
-                    'D - $dDay',
+                    'D - ${getDday()}',
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.white,
@@ -197,7 +210,7 @@ class _AssetCardState extends State<AssetCard> {
                         ),
                       ),
                       Text(
-                        '현재 수익은 54만원 입니다.',
+                        '현재 수익은 ${getInterest()}원 입니다.',
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,
@@ -222,5 +235,28 @@ class _AssetCardState extends State<AssetCard> {
       return size;
     }
     return Size(0.0, 0.0);
+  }
+
+  int getGoalPersent() {
+    final asset = widget.asset;
+    final goalMoney = asset.goalMoney;
+    final totalIncome = asset.incomeList
+        .fold(0, (previousValue, element) => previousValue + element.value);
+    if (totalIncome == 0) {
+      return 0;
+    }
+    final goalPersent = (goalMoney / totalIncome) * 100;
+    return goalPersent.round() ~/ 100;
+  }
+
+  String getDday() {
+    final goalTimeStamp = widget.asset.goalTimestamp;
+    final dDay =
+        unixTimestampToDateTime(goalTimeStamp).getDayDifference(DateTime.now());
+    return '$dDay';
+  }
+
+  int getInterest() {
+    return 0;
   }
 }

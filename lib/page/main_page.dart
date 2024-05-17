@@ -209,32 +209,34 @@ class _MainPageState extends State<MainPage> {
                             ),
                           ],
                         ),
-                        Expanded(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 12.0),
-                            child: ListView.separated(
-                              padding: EdgeInsetsDirectional.symmetric(
-                                  vertical: 12.0),
-                              itemCount: state
-                                  .eventModel
-                                  .categoryList[currentPageIndex]
-                                  .expenseList
-                                  .length,
-                              itemBuilder: (context, index) {
-                                return IncomeCard(state
-                                    .eventModel
-                                    .categoryList[currentPageIndex]
-                                    .expenseList[index]);
-                              },
-                              separatorBuilder: (context, index) {
-                                return SizedBox(
-                                  height: 12,
-                                );
-                              },
-                            ),
-                          ),
-                        )
+                        state.eventModel.categoryList.isEmpty
+                            ? Container()
+                            : Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12.0),
+                                  child: ListView.separated(
+                                    padding: EdgeInsetsDirectional.symmetric(
+                                        vertical: 12.0),
+                                    itemCount: state
+                                        .eventModel
+                                        .categoryList[currentPageIndex]
+                                        .expenseList
+                                        .length,
+                                    itemBuilder: (context, index) {
+                                      return IncomeCard(state
+                                          .eventModel
+                                          .categoryList[currentPageIndex]
+                                          .expenseList[index]);
+                                    },
+                                    separatorBuilder: (context, index) {
+                                      return SizedBox(
+                                        height: 12,
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
                       ],
                     ),
                   );
