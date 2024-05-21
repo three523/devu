@@ -7,8 +7,9 @@ import 'package:flutter/material.dart';
 
 class IncomeCard extends StatelessWidget {
   Money money;
+  bool isAsset;
 
-  IncomeCard(this.money);
+  IncomeCard(this.money, this.isAsset);
 
   @override
   Widget build(BuildContext context) {
@@ -60,37 +61,13 @@ class IncomeCard extends StatelessWidget {
                 ),
                 Spacer(),
                 Text(
-                  '${isExpense(money.value) ? '' : '+'}${(-money.value).toPriceString()}원',
+                  '${isExpense(money.value) ? '' : '+'}${(money.value).toPriceString()}원',
                   style: TextStyle(
                       color: isExpense(money.value) ? Colors.red : Colors.green,
                       fontWeight: FontWeight.w800),
                 ),
               ],
             ),
-            // if (money.tagList.isNotEmpty)
-            //   Row(
-            //     children: [
-            //       SizedBox(
-            //         width: 20,
-            //       ),
-            //       Expanded(
-            //         child: SizedBox(
-            //           height: 26,
-            //           child: ListView.builder(
-            //               shrinkWrap: true,
-            //               itemCount: money.tagList.length,
-            //               scrollDirection: Axis.horizontal,
-            //               itemBuilder: ((context, index) {
-            //                 return Padding(
-            //                   padding: const EdgeInsets.only(right: 4.0),
-            //                   child: LabelWidget(money.tagList[index].name,
-            //                       Color(money.tagList[index].color)),
-            //                 );
-            //               })),
-            //         ),
-            //       ),
-            //     ],
-            //   )
             Container(
               width: double.infinity,
               child: Padding(
@@ -111,24 +88,6 @@ class IncomeCard extends StatelessWidget {
                 ),
               ),
             ),
-            // Container(
-            //   height: 26,
-            //   width: double.infinity,
-            //   child: Row(
-            //     mainAxisSize: MainAxisSize.min,
-            //     children: [
-            //       SizedBox(
-            //         width: 20.0,
-            //       ),
-            //       for (int i = 0; i < money.tagList.length; i++)
-            //         Padding(
-            //           padding: const EdgeInsets.only(right: 4.0),
-            //           child: LabelWidget(money.tagList[i].name,
-            //               Color(money.tagList[i].color)),
-            //         ),
-            //     ],
-            //   ),
-            // )
           ],
         ),
       ),
@@ -136,6 +95,10 @@ class IncomeCard extends StatelessWidget {
   }
 
   bool isExpense(int money) {
-    return money >= 0;
+    if (isAsset) {
+      return money < 0;
+    } else {
+      return money < 0;
+    }
   }
 }

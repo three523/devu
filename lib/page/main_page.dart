@@ -8,12 +8,14 @@ import 'package:devu_app/expense_event.dart';
 import 'package:devu_app/expense_state.dart';
 import 'package:devu_app/page/add_category_page.dart';
 import 'package:devu_app/page/add_expenses_page.dart';
+import 'package:devu_app/page/total_expense_page.dart';
 import 'package:devu_app/utils/extenstion.dart';
 import 'package:devu_app/utils/utils.dart';
 import 'package:devu_app/widget/category_card.dart';
 import 'package:devu_app/widget/home_appbar.dart';
 import 'package:devu_app/widget/income_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MainPage extends StatefulWidget {
@@ -176,7 +178,7 @@ class _MainPageState extends State<MainPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.symmetric(
+                              padding: EdgeInsets.symmetric(
                                   horizontal: 16.0, vertical: 8.0),
                               child: Row(
                                 mainAxisAlignment:
@@ -189,22 +191,33 @@ class _MainPageState extends State<MainPage> {
                                         fontSize: 22,
                                         fontWeight: FontWeight.w800),
                                   ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text('모두보기'),
-                                      Icon(
-                                        Icons.arrow_forward_ios,
-                                        size: 14,
-                                      ),
-                                    ],
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              TotalExpensePage(),
+                                        ),
+                                      );
+                                    },
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text('모두보기'),
+                                        Icon(
+                                          Icons.arrow_forward_ios,
+                                          size: 14,
+                                        ),
+                                      ],
+                                    ),
                                   )
                                 ],
                               ),
                             ),
                             Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16.0),
+                              padding: EdgeInsets.symmetric(horizontal: 16.0),
                               child: Text('2024.04.08 기준'),
                             ),
                           ],
@@ -224,10 +237,13 @@ class _MainPageState extends State<MainPage> {
                                         .expenseList
                                         .length,
                                     itemBuilder: (context, index) {
-                                      return IncomeCard(state
-                                          .eventModel
-                                          .categoryList[currentPageIndex]
-                                          .expenseList[index]);
+                                      return IncomeCard(
+                                        state
+                                            .eventModel
+                                            .categoryList[currentPageIndex]
+                                            .expenseList[index],
+                                        false,
+                                      );
                                     },
                                     separatorBuilder: (context, index) {
                                       return SizedBox(
