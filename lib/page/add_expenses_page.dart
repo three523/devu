@@ -183,6 +183,7 @@ class _AddExpensesPageState extends State<AddExpensesPage> {
               height: 8,
             ),
             LabelSelectorWidget(
+              selectedList: tagList,
               onSelecteds: (newTagList) {
                 tagList = newTagList;
               },
@@ -230,7 +231,7 @@ class _AddExpensesPageState extends State<AddExpensesPage> {
               if (price <= 0) {
                 return;
               }
-              price = isExpenses() ? price : -price;
+              price = isExpenses() ? -price : price;
               final category = widget.expenseCategory;
               if (category != null && isOutOfExpenses() == null) {
                 BlocProvider.of<ExpenseBloc>(context).add(CreateExpenseEvent(

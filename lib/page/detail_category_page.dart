@@ -60,6 +60,7 @@ class DetailCategoryPage extends StatelessWidget {
                       10000,
                       [],
                     ),
+                    true,
                   );
                 },
                 separatorBuilder: (context, index) {

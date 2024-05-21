@@ -210,12 +210,13 @@ class AssetDetailCard extends StatelessWidget {
 
   int totalPersent() {
     final goalMoney = asset.goalMoney;
-    final totalIncomeMoney = totalMoeny();
-    if (totalMoeny() == 0) {
+    final totalIncome = asset.incomeList
+        .fold(0, (previousValue, element) => previousValue + element.value);
+    if (totalIncome == 0) {
       return 0;
     }
-    final totalPersent = (goalMoney / totalIncomeMoney) * 100;
-    return totalPersent.round();
+    final goalPersent = (goalMoney / totalIncome) * 100;
+    return goalPersent.round() ~/ 100;
   }
 
   int dDay() {

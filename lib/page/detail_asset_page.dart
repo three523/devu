@@ -107,6 +107,7 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: IncomeCard(
                         widget.asset.incomeList[index - 1],
+                        true,
                       ),
                     );
                   },
