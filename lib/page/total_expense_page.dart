@@ -102,17 +102,17 @@ class _TotalExpensePageState extends State<TotalExpensePage> {
 
   List<Money> getExpenseList(
       List<ExpenseCategory> categoryList, List<Tag> filterTagList) {
-    print(
-        'taglist: ${filterTagList.length} categoryList: ${categoryList.length}');
     List<Money> moneyList = [];
     for (int i = 0; i < categoryList.length; i++) {
-      print('test: ${categoryList[i].expenseList.length}');
-      moneyList.addAll(categoryList[i].expenseList.where((expense) =>
-          expense.tagList.any((expenseTag) => filterTagList
-              .any((filterTag) => expenseTag.name == filterTag.name))));
+      if (filterTagList.isEmpty) {
+        moneyList.addAll(categoryList[i].expenseList);
+      } else {
+        moneyList.addAll(categoryList[i].expenseList.where((expense) =>
+            expense.tagList.any((expenseTag) => filterTagList
+                .any((filterTag) => expenseTag.name == filterTag.name))));
+      }
     }
     expenseList = moneyList;
-    print('expenseList: ${expenseList}');
     return moneyList;
   }
 
