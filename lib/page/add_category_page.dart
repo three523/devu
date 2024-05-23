@@ -29,7 +29,7 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
   void initState() {
     super.initState();
     BlocProvider.of<ExpenseBloc>(context)
-        .add(LoadByDayExpenseEvent(widget.categoryDateTime));
+        .add(LoadByDayExpenseCategoryListEvent(widget.categoryDateTime));
   }
 
   @override

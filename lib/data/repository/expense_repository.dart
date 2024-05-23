@@ -150,6 +150,45 @@ class ExpenseRepository {
     return categoryList ?? ExpenseCategoryList(key, []);
   }
 
+  ExpenseCategory getExpenseByDate(DateTime date, String categoryTitle) {
+    final DateTime firstDayOfMonth = getFirstDayOfMonth(date);
+    final int key = dateTimeToUnixTimestamp(firstDayOfMonth);
+    final ExpenseCategoryList? categoryList = expenseBox.get(key);
+    if (categoryList == null) {
+      final allCategoryKey = getAllCategoryKey();
+      if (allCategoryKey.isEmpty) {
+        return findCategory(ExpenseCategoryList(key, []), categoryTitle);
+      }
+      allCategoryKey.sort((a, b) {
+        if (a is int && b is int) {
+          if (a <= b) {
+            return -1;
+          } else {
+            return 1;
+          }
+        } else {
+          return -1;
+        }
+      });
+      final previousCategoryList = expenseBox.get(allCategoryKey.last);
+      if (previousCategoryList != null &&
+          previousCategoryList.categoryList.isNotEmpty) {
+        ExpenseCategoryList newCategoryList;
+        newCategoryList = copyCategoryList(
+            firstDayOfMonth, previousCategoryList.categoryList);
+        createCategoryList(newCategoryList);
+        return findCategory(newCategoryList, categoryTitle);
+      }
+    }
+    return findCategory(
+        categoryList ?? ExpenseCategoryList(key, []), categoryTitle);
+  }
+
+  ExpenseCategory findCategory(ExpenseCategoryList categoryList, String title) {
+    return categoryList.categoryList
+        .firstWhere((element) => element.title == title);
+  }
+
   void createCategoryList(ExpenseCategoryList categoryList) {
     final DateTime date = unixTimestampToDateTime(categoryList.timeStamp);
     final DateTime firstDayOfMonth = getFirstDayOfMonth(date);

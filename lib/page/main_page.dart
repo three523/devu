@@ -4,6 +4,7 @@ import 'package:devu_app/data/model/tag.dart';
 import 'package:devu_app/data/repository/expense_repository.dart';
 import 'package:devu_app/data/resource.dart';
 import 'package:devu_app/expense_bloc.dart';
+import 'package:devu_app/expense_detail_bloc.dart';
 import 'package:devu_app/expense_event.dart';
 import 'package:devu_app/expense_state.dart';
 import 'package:devu_app/page/add_category_page.dart';
@@ -39,7 +40,7 @@ class _MainPageState extends State<MainPage> {
     super.initState();
 
     BlocProvider.of<ExpenseBloc>(context)
-        .add(LoadByDayExpenseEvent(DateTime.now()));
+        .add(LoadByDayExpenseCategoryListEvent(DateTime.now()));
   }
 
   @override
@@ -71,19 +72,6 @@ class _MainPageState extends State<MainPage> {
       body: SafeArea(
         child: Column(
           children: [
-            // Padding(
-            //   padding:
-            //       const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
-            //   child: HomeAppBar(
-            //     '/addCategory',
-            //     () {
-            //       Navigator.of(context).push(
-            //         MaterialPageRoute(
-            //             builder: (context) => AddCategoryPage(currentDateTime)),
-            //       );
-            //     },
-            //   ),
-            // ),
             BlocBuilder<ExpenseBloc, ExpenseState>(
               builder: (context, state) {
                 if (state is ExpenseSucessState) {
@@ -106,7 +94,7 @@ class _MainPageState extends State<MainPage> {
                               currentDateTime = date;
                               currentPageIndex = 0;
                               BlocProvider.of<ExpenseBloc>(context)
-                                  .add(LoadByDayExpenseEvent(date));
+                                  .add(LoadByDayExpenseCategoryListEvent(date));
                             },
                             description: totalExpense(state.eventModel),
                             dateTime: currentDateTime,
@@ -127,8 +115,21 @@ class _MainPageState extends State<MainPage> {
                                 onTap: () {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
-                                        builder: (context) =>
-                                            DetailCategoryPage()),
+                                      builder: (context) {
+                                        return BlocProvider(
+                                          create: (_) => ExpenseDetailBloc(
+                                              ExpenseRepository()),
+                                          child: DetailCategoryPage(
+                                            state
+                                                .eventModel.categoryList[index],
+                                            unixTimestampToDateTime(state
+                                                .eventModel
+                                                .categoryList[index]
+                                                .timeStamp),
+                                          ),
+                                        );
+                                      },
+                                    ),
                                   );
                                 },
                                 child: Padding(

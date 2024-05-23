@@ -5,9 +5,15 @@ sealed class ExpenseEvent {}
 
 final class LoadExpenseEvent extends ExpenseEvent {}
 
-final class LoadByDayExpenseEvent extends ExpenseEvent {
+final class LoadByDayExpenseCategoryListEvent extends ExpenseEvent {
   final DateTime time;
-  LoadByDayExpenseEvent(this.time);
+  LoadByDayExpenseCategoryListEvent(this.time);
+}
+
+final class LoadByDayExpenseCategoryEvent extends ExpenseEvent {
+  final DateTime time;
+  final String categoryId;
+  LoadByDayExpenseCategoryEvent(this.time, this.categoryId);
 }
 
 final class CreateExpenseEvent extends ExpenseEvent {

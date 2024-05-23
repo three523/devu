@@ -31,7 +31,7 @@ class _TotalExpensePageState extends State<TotalExpensePage> {
   void initState() {
     super.initState();
     BlocProvider.of<ExpenseBloc>(context)
-        .add(LoadByDayExpenseEvent(selectedDateTime));
+        .add(LoadByDayExpenseCategoryListEvent(selectedDateTime));
   }
 
   @override
@@ -98,7 +98,7 @@ class _TotalExpensePageState extends State<TotalExpensePage> {
   void updateNewDate(DateTime newDateTime) {
     selectedDateTime = newDateTime;
     BlocProvider.of<ExpenseBloc>(context)
-        .add(LoadByDayExpenseEvent(newDateTime));
+        .add(LoadByDayExpenseCategoryListEvent(newDateTime));
   }
 
   List<Money> getExpenseList(

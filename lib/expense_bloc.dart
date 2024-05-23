@@ -17,7 +17,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
     //     emit(ExpenseSucessState(expensesList));
     //   },
     // );
-    on<LoadByDayExpenseEvent>(
+    on<LoadByDayExpenseCategoryListEvent>(
       (event, emit) {
         final expenseList = _expenseRepository.getExpensesByDate(event.time);
         emit(ExpenseSucessState(expenseList));
