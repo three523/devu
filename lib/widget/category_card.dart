@@ -60,7 +60,7 @@ class _CategoryCardState extends State<CategoryCard> {
                                       .fold(
                                           0,
                                           (value, element) =>
-                                              value + element.value)
+                                              value + -element.value)
                                       .toPriceString() ??
                                   '0',
                               style: TextStyle(
@@ -105,8 +105,8 @@ class _CategoryCardState extends State<CategoryCard> {
                                 gradient: LinearGradient(
                                   colors: gradientColors,
                                   stops: [
-                                    usedMoneyRate().toDouble() / 100,
-                                    usedMoneyRate().toDouble() / 100,
+                                    -usedMoneyRate().toDouble() / 100,
+                                    -usedMoneyRate().toDouble() / 100,
                                   ],
                                   begin: Alignment.centerLeft,
                                   end: Alignment.centerRight,
@@ -116,7 +116,7 @@ class _CategoryCardState extends State<CategoryCard> {
                         SizedBox(
                           width: 12.0,
                         ),
-                        Text("${usedMoneyRate()}%"),
+                        Text("${-usedMoneyRate()}%"),
                       ],
                     ),
                   )

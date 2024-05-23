@@ -1,3 +1,4 @@
+import 'package:devu_app/data/model/expense_category.dart';
 import 'package:devu_app/data/model/expense_category_list.dart';
 import 'package:devu_app/data/model/money.dart';
 
@@ -18,4 +19,9 @@ class ExpenseLoadingState extends ExpenseState {}
 class ExpenseErrorState extends ExpenseState {
   final String error;
   ExpenseErrorState(this.error);
+}
+
+class ExpenseCategorySucessState extends ExpenseState {
+  final ExpenseCategory category;
+  ExpenseCategorySucessState(this.category);
 }
