@@ -50,6 +50,7 @@ class _TotalExpensePageState extends State<TotalExpensePage> {
                 onChangeDate: (newDateTime) {
                   setState(() {
                     updateNewDate(newDateTime);
+                    resetFilter();
                   });
                 },
               ),
@@ -183,5 +184,9 @@ class _TotalExpensePageState extends State<TotalExpensePage> {
   double dp(double val, int places) {
     num mod = pow(10.0, places);
     return ((val * mod).round().toDouble() / mod);
+  }
+
+  void resetFilter() {
+    selectedTagList = [];
   }
 }

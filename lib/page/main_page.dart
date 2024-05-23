@@ -8,6 +8,7 @@ import 'package:devu_app/expense_event.dart';
 import 'package:devu_app/expense_state.dart';
 import 'package:devu_app/page/add_category_page.dart';
 import 'package:devu_app/page/add_expenses_page.dart';
+import 'package:devu_app/page/detail_category_page.dart';
 import 'package:devu_app/page/total_expense_page.dart';
 import 'package:devu_app/utils/extenstion.dart';
 import 'package:devu_app/utils/utils.dart';
@@ -124,8 +125,11 @@ class _MainPageState extends State<MainPage> {
                             itemBuilder: (context, index) {
                               return GestureDetector(
                                 onTap: () {
-                                  Navigator.pushNamed(
-                                      context, '/detailCategory');
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            DetailCategoryPage()),
+                                  );
                                 },
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
