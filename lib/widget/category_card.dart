@@ -223,9 +223,13 @@ class _CategoryCardState extends State<CategoryCard> {
       final currentMonthLastDay = DateTime(now.year, now.month + 1, 0).day;
       final remainigDays = currentMonthLastDay - compareDay;
 
-      final usedMoney = category.expenseList
-          .fold(0, (previousValue, element) => previousValue + element.value);
-      final leftMoney = category.belowMoeny - usedMoney;
+      int usedMoney = 0;
+
+      if (isFirstDayOfMonth == false) {
+        usedMoney = category.expenseList
+            .fold(0, (previousValue, element) => previousValue + element.value);
+      }
+      final leftMoney = category.belowMoeny + usedMoney;
       if (leftMoney <= 0) {
         return 0;
       }

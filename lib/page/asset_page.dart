@@ -111,7 +111,7 @@ class _AssetPageState extends State<AssetPage> {
               Expanded(
                 child: state is AssetLoadSuccessState
                     ? Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           ExpandablePageView(
                             onPageChanged: onPageViewChange,

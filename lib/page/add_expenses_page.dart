@@ -233,7 +233,7 @@ class _AddExpensesPageState extends State<AddExpensesPage> {
               }
               price = isExpenses() ? -price : price;
               final category = widget.expenseCategory;
-              if (category != null && isOutOfExpenses() == null) {
+              if (category != null && validateTextToPrice()) {
                 BlocProvider.of<ExpenseBloc>(context).add(CreateExpenseEvent(
                     category,
                     Money(Uuid().v4().toString(), memoController.text,
@@ -255,8 +255,7 @@ class _AddExpensesPageState extends State<AddExpensesPage> {
   }
 
   int? isOutOfExpenses() {
-    if (priceController.text.toPrice() == null &&
-        widget.expenseCategory == null) {
+    if (validateTextToPrice() == false) {
       return null;
     }
     final category = widget.expenseCategory!;
@@ -271,6 +270,11 @@ class _AddExpensesPageState extends State<AddExpensesPage> {
     }
 
     return null;
+  }
+
+  bool validateTextToPrice() {
+    return priceController.text.toPrice() != null &&
+        widget.expenseCategory != null;
   }
 
   void showCategorySelectDialog(

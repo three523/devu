@@ -5,6 +5,8 @@ import 'package:devu_app/data/model/asset.dart';
 import 'package:devu_app/data/model/money.dart';
 import 'package:devu_app/data/model/tag.dart';
 import 'package:devu_app/data/resource.dart';
+import 'package:devu_app/page/add_category_page.dart';
+import 'package:devu_app/page/setup_asset_page.dart';
 import 'package:devu_app/utils/trianglePainter.dart';
 import 'package:devu_app/utils/utils.dart';
 import 'package:devu_app/widget/asset_detail_card.dart';
@@ -50,9 +52,18 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
               onSelected: (value) {
                 switch (value) {
                   case MenuType.update:
-                    break;
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SetupAssetPage(
+                          asset: widget.asset,
+                        ),
+                      ),
+                    );
                   case MenuType.delete:
-                    break;
+                    BlocProvider.of<AssetBloc>(context)
+                        .add(DeleteAssetEvent(widget.asset));
+                    Navigator.pop(context);
                 }
               },
               itemBuilder: (BuildContext context) => <PopupMenuEntry<MenuType>>[
@@ -98,10 +109,15 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
             if (state is AssetLoadSuccessState)
               Expanded(
                 child: ListView.separated(
-                  itemCount: widget.asset.incomeList.length + 1,
+                  itemCount: widget.asset.incomeList.isEmpty
+                      ? 2
+                      : widget.asset.incomeList.length + 1,
                   itemBuilder: (context, index) {
                     if (index == 0) {
                       return getHeader();
+                    } else if (widget.asset.incomeList.isEmpty) {
+                      return Center(
+                          child: Text('저축내역이 없습니다\n추가하기 버튼을 눌러 추가해주세요.'));
                     }
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
