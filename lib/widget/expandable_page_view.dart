@@ -28,7 +28,7 @@ class _ExpandablePageViewState extends State<ExpandablePageView> {
   late Axis _scrollDirection;
   int _currentPage = 0;
 
-  double get _currentHeight => _heights[_currentPage];
+  double get _currentHeight => _heights.isNotEmpty ? _heights[_currentPage] : 0;
 
   @override
   void initState() {
@@ -48,9 +48,14 @@ class _ExpandablePageViewState extends State<ExpandablePageView> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.itemCount == 0) {
+      return Container(); // 빈 컨테이너 반환
+    }
+
     return TweenAnimationBuilder<double>(
       curve: Curves.easeInOutCubic,
-      tween: Tween<double>(begin: _heights.first, end: _currentHeight),
+      tween: Tween<double>(
+          begin: _heights.isNotEmpty ? _heights.first : 0, end: _currentHeight),
       duration: const Duration(milliseconds: 100),
       builder: (context, value, child) => SizedBox(height: value, child: child),
       child: PageView.builder(

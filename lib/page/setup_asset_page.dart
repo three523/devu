@@ -14,17 +14,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
 
 class SetupAssetPage extends StatefulWidget {
+  Asset? asset;
+
+  SetupAssetPage({this.asset});
   @override
   State<SetupAssetPage> createState() => _SetupAssetPageState();
 }
 
 class _SetupAssetPageState extends State<SetupAssetPage> {
-  TextEditingController titleController = TextEditingController();
-  TextEditingController memoController = TextEditingController();
-  DateTime goalDate = DateTime.now().add(Duration(days: 1));
-  int goalMoney = 0;
-  double goalRateOfReturn = 0.0;
-  List<Tag> tagList = [];
+  late TextEditingController titleController =
+      TextEditingController(text: widget.asset?.title ?? '');
+  late TextEditingController memoController =
+      TextEditingController(text: widget.asset?.memo ?? '');
+  late DateTime goalDate = widget.asset != null
+      ? unixTimestampToDateTime(widget.asset!.goalTimestamp)
+      : DateTime.now().add(Duration(days: 1));
+  late int goalMoney = widget.asset?.goalMoney ?? 0;
+  late double goalRateOfReturn = widget.asset?.goalRate ?? 0.0;
+  late List<Tag> tagList = widget.asset?.tagList ?? [];
 
   @override
   Widget build(BuildContext context) {
@@ -91,6 +98,7 @@ class _SetupAssetPageState extends State<SetupAssetPage> {
                   );
                 },
                 valueType: ValueType.money,
+                initValue: goalMoney,
               ),
             ),
             SizedBox(
@@ -122,6 +130,7 @@ class _SetupAssetPageState extends State<SetupAssetPage> {
                   );
                 },
                 valueType: ValueType.number,
+                initValue: goalRateOfReturn,
               ),
             ),
             SizedBox(
@@ -189,6 +198,7 @@ class _SetupAssetPageState extends State<SetupAssetPage> {
               height: 8.0,
             ),
             LabelSelectorWidget(
+              selectedList: tagList,
               onSelecteds: (newTagList) {
                 tagList = newTagList;
               },
