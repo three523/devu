@@ -247,6 +247,10 @@ class _CategoryCardState extends State<CategoryCard> {
         return 0;
       }
       final belowMoney = category.belowMoeny;
+
+      if (belowMoney == 0) {
+        return -100;
+      }
       final usedMoneyRate = (usedMoney / belowMoney) * 100;
       return usedMoneyRate.round();
     }
