@@ -109,70 +109,80 @@ class _AssetPageState extends State<AssetPage> {
                 ),
               ),
               Expanded(
-                child: state is AssetLoadSuccessState
-                    ? Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          ExpandablePageView(
-                            onPageChanged: onPageViewChange,
-                            scrollDirection: Axis.horizontal,
-                            controller: PageController(
-                              viewportFraction: 0.8,
-                            ),
-                            itemCount: state.assetList.length,
-                            itemBuilder: (context, index) {
-                              return GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => DetailAssetPage(
-                                          state.assetList[index])));
-                                },
-                                child: AssetCard(state.assetList[index]),
-                              );
-                            },
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(24.0),
-                            child: SizedBox(
-                              height: 8,
-                              width: double.infinity,
-                              child: Center(
-                                child: ListView.separated(
-                                  itemCount: state.assetList.length,
+                  child: state is AssetLoadSuccessState
+                      ? state.assetList.isNotEmpty
+                          ? Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                ExpandablePageView(
+                                  onPageChanged: onPageViewChange,
                                   scrollDirection: Axis.horizontal,
-                                  shrinkWrap: true,
-                                  padding: EdgeInsets.symmetric(horizontal: 8),
+                                  controller: PageController(
+                                    viewportFraction: 0.8,
+                                  ),
+                                  itemCount: state.assetList.length,
                                   itemBuilder: (context, index) {
-                                    return Container(
-                                      width: 8,
-                                      height: 8,
-                                      decoration: BoxDecoration(
-                                        border: currentPageIndex == index
-                                            ? null
-                                            : Border.all(
-                                                width: 0.5,
-                                                color: Colors.black,
-                                              ),
-                                        borderRadius: BorderRadius.circular(8),
-                                        color: currentPageIndex == index
-                                            ? primaryColor
-                                            : Colors.white,
-                                      ),
-                                    );
-                                  },
-                                  separatorBuilder: (context, index) {
-                                    return SizedBox(
-                                      width: 4,
+                                    return GestureDetector(
+                                      onTap: () {
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    DetailAssetPage(state
+                                                        .assetList[index])));
+                                      },
+                                      child: AssetCard(state.assetList[index]),
                                     );
                                   },
                                 ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      )
-                    : Container(),
-              )
+                                Padding(
+                                  padding: const EdgeInsets.all(24.0),
+                                  child: SizedBox(
+                                    height: 8,
+                                    width: double.infinity,
+                                    child: Center(
+                                      child: ListView.separated(
+                                        itemCount: state.assetList.length,
+                                        scrollDirection: Axis.horizontal,
+                                        shrinkWrap: true,
+                                        padding:
+                                            EdgeInsets.symmetric(horizontal: 8),
+                                        itemBuilder: (context, index) {
+                                          return Container(
+                                            width: 8,
+                                            height: 8,
+                                            decoration: BoxDecoration(
+                                              border: currentPageIndex == index
+                                                  ? null
+                                                  : Border.all(
+                                                      width: 0.5,
+                                                      color: Colors.black,
+                                                    ),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              color: currentPageIndex == index
+                                                  ? primaryColor
+                                                  : Colors.white,
+                                            ),
+                                          );
+                                        },
+                                        separatorBuilder: (context, index) {
+                                          return SizedBox(
+                                            width: 4,
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                          : Center(
+                              child:
+                                  Text('목표자산이 존재하지 않습니다.\n추가하기 버튼을 통해 추가해주세요.'),
+                            )
+                      : Center(
+                          child: Text('데이터를 가져오지 못했습니다.\n다시 시도해주세요.'),
+                        ))
             ],
           );
         }),
