@@ -76,8 +76,15 @@ class _ExpandablePageViewState extends State<ExpandablePageView> {
       maxHeight: double.infinity,
       alignment: Alignment.topCenter,
       child: SizeReportingWidget(
-        onSizeChange: (size) =>
-            setState(() => _heights[index] = size.height ?? 0),
+        onSizeChange: (size) {
+          setState(() {
+            if (index < _heights.length) {
+              _heights[index] = size.height;
+            } else {
+              _heights.add(size.height);
+            }
+          });
+        },
         child: item,
       ),
     );
@@ -85,7 +92,7 @@ class _ExpandablePageViewState extends State<ExpandablePageView> {
 
   void _updatePage() {
     final newPage = _pageController.page?.round() ?? 0;
-    if (_currentPage != newPage) {
+    if (_currentPage != newPage && newPage < _heights.length) {
       setState(() {
         _currentPage = newPage;
       });

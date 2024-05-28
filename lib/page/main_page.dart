@@ -57,13 +57,9 @@ class _MainPageState extends State<MainPage> {
                     context,
                     MaterialPageRoute(
                       builder: (context) {
-                        if (state is ExpenseSucessState) {
-                          final category =
-                              state.eventModel.categoryList[currentPageIndex];
-                          return AddExpensesPage(expenseCategory: category);
-                        } else {
-                          return AddExpensesPage();
-                        }
+                        final category =
+                            state.eventModel.categoryList[currentPageIndex];
+                        return AddExpensesPage(expenseCategory: category);
                       },
                     ),
                   );

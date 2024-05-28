@@ -194,14 +194,14 @@ class _AssetCardState extends State<AssetCard> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(20.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(right: 12.0),
+                        padding: const EdgeInsets.only(right: 8.0),
                         child: LabelWidget(
-                          todayIncomPersent.toString(),
+                          '${getInterestRate().toString()}%',
                           Colors.green,
                           foregroundColor: Colors.white,
                           padding:
@@ -209,11 +209,15 @@ class _AssetCardState extends State<AssetCard> {
                           icon: Icons.trending_up,
                         ),
                       ),
-                      Text(
-                        '현재 수익은 ${getInterest()}원 입니다.',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
+                      Expanded(
+                        child: Text(
+                          '현재 수익은 ${formatToKoreanNumber(getInterest())}원 입니다.',
+                          maxLines: 2,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                          ),
                         ),
                       )
                     ],
@@ -245,7 +249,7 @@ class _AssetCardState extends State<AssetCard> {
     if (totalIncome == 0) {
       return 0;
     }
-    final goalPersent = (goalMoney / totalIncome) * 100;
+    final goalPersent = (totalIncome / goalMoney) * 10000;
     return goalPersent.round() ~/ 100;
   }
 
@@ -257,6 +261,25 @@ class _AssetCardState extends State<AssetCard> {
   }
 
   int getInterest() {
-    return 0;
+    return widget.asset.incomeList.fold(
+        0,
+        (previousValue, element) =>
+            previousValue + (element.isInterest ? element.value : 0));
+  }
+
+  double getInterestRate() {
+    final interrest = getInterest().toDouble();
+    final totalMoney = getTotalMoney().toDouble();
+    if (interrest == 0 || totalMoney == 0) {
+      return 0.0;
+    }
+    final double rate = interrest / totalMoney * 1000;
+    print('interrest: $interrest, totalMoney: $totalMoney, rate: $rate');
+    return rate.round().toDouble() / 10;
+  }
+
+  int getTotalMoney() {
+    return widget.asset.incomeList
+        .fold(0, (previousValue, element) => previousValue + element.value);
   }
 }

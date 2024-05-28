@@ -10,7 +10,12 @@ class AssetBloc extends Bloc<AssetEvent, AssetState> {
     on<LoadAssetEvent>(
       (event, emit) {
         final assetList = _assetRepository.getAssetList();
-        emit(AssetLoadSuccessState(assetList));
+        if (event.assetId != null) {
+          emit(AssetLoadSuccessState(assetList,
+              asset: _assetRepository.getAsset(event.assetId!)));
+        } else {
+          emit(AssetLoadSuccessState(assetList, asset: null));
+        }
       },
     );
     on<CreateAssetEvent>(
@@ -24,7 +29,8 @@ class AssetBloc extends Bloc<AssetEvent, AssetState> {
       (event, emit) async {
         await _assetRepository.updateAsset(event.updateAsset);
         final assetList = _assetRepository.getAssetList();
-        emit(AssetLoadSuccessState(assetList));
+        final asset = _assetRepository.getAsset(event.updateAsset.id);
+        emit(AssetLoadSuccessState(assetList, asset: asset));
       },
     );
     on<DeleteAssetEvent>(
@@ -37,20 +43,23 @@ class AssetBloc extends Bloc<AssetEvent, AssetState> {
     on<CreateIncomeEvent>((event, emit) async {
       await _assetRepository.createIncome(event.asset, event.newIncome);
       final assetList = _assetRepository.getAssetList();
-      emit(AssetLoadSuccessState(assetList));
+      final asset = _assetRepository.getAsset(event.asset.id);
+      emit(AssetLoadSuccessState(assetList, asset: asset));
     });
     on<DeleteIncomeEvent>(
       (event, emit) async {
         await _assetRepository.deleteIncome(event.asset, event.deleteIncome);
         final assetList = _assetRepository.getAssetList();
-        emit(AssetLoadSuccessState(assetList));
+        final asset = _assetRepository.getAsset(event.asset.id);
+        emit(AssetLoadSuccessState(assetList, asset: asset));
       },
     );
     on<UpdateIncomeEvent>(
       (event, emit) async {
         await _assetRepository.updateIncome(event.asset, event.updateIncome);
         final assetList = _assetRepository.getAssetList();
-        emit(AssetLoadSuccessState(assetList));
+        final asset = _assetRepository.getAsset(event.asset.id);
+        emit(AssetLoadSuccessState(assetList, asset: asset));
       },
     );
   }

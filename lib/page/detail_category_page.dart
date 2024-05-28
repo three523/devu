@@ -1,6 +1,4 @@
 import 'package:devu_app/data/model/expense_category.dart';
-import 'package:devu_app/data/model/expense_category_list.dart';
-import 'package:devu_app/expense_bloc.dart';
 import 'package:devu_app/expense_detail_bloc.dart';
 import 'package:devu_app/expense_event.dart';
 import 'package:devu_app/expense_state.dart';

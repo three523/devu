@@ -259,9 +259,16 @@ class _SetupAssetPageState extends State<SetupAssetPage> {
                 ),
                 onPressed: () {
                   if (validate()) {
-                    BlocProvider.of<AssetBloc>(context)
-                        .add(CreateAssetEvent(createAsset()));
-                    Navigator.of(context).pop();
+                    if (widget.asset == null) {
+                      print('creating...');
+                      BlocProvider.of<AssetBloc>(context)
+                          .add(CreateAssetEvent(createAsset()));
+                    } else {
+                      print('updating...');
+                      BlocProvider.of<AssetBloc>(context)
+                          .add(UpdateAssetEvent(updateAsset()));
+                    }
+                    Navigator.of(context).pop(true);
                   }
                 },
                 child: Text(
@@ -293,10 +300,26 @@ class _SetupAssetPageState extends State<SetupAssetPage> {
         Uuid().v4(),
         titleController.text,
         dateTimeToUnixTimestamp(DateTime.now()),
+        dateTimeToUnixTimestamp(DateTime.now()),
         dateTimeToUnixTimestamp(goalDate),
         goalMoney,
         goalRateOfReturn,
         [],
+        memoController.text,
+        tagList);
+  }
+
+  Asset updateAsset() {
+    final asset = widget.asset!;
+    return Asset(
+        asset.id,
+        titleController.text,
+        asset.startTimeStamp,
+        dateTimeToUnixTimestamp(DateTime.now()),
+        dateTimeToUnixTimestamp(goalDate),
+        goalMoney,
+        goalRateOfReturn,
+        asset.incomeList,
         memoController.text,
         tagList);
   }

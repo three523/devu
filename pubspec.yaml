@@ -43,6 +43,7 @@ dependencies:
   flutter_bloc: ^8.1.5
   month_picker_dialog: ^2.11.2
   dotted_border: ^2.1.0
+  collection: ^1.18.0
 
 dev_dependencies:
   flutter_test:

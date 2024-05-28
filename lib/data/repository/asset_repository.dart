@@ -9,6 +9,10 @@ class AssetRepository {
     return assetBox.values.toList();
   }
 
+  Asset getAsset(String id) {
+    return assetBox.values.toList().singleWhere((element) => element.id == id);
+  }
+
   Future<void> createAsset(Asset asset) async {
     await assetBox.put(asset.id, asset);
   }

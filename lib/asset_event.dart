@@ -4,7 +4,8 @@ import 'package:devu_app/data/model/money.dart';
 sealed class AssetEvent {}
 
 class LoadAssetEvent extends AssetEvent {
-  LoadAssetEvent();
+  final String? assetId;
+  LoadAssetEvent({this.assetId});
 }
 
 class CreateAssetEvent extends AssetEvent {

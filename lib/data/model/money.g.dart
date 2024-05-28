@@ -23,13 +23,14 @@ class MoneyAdapter extends TypeAdapter<Money> {
       fields[3] as DateTime,
       fields[4] as int,
       fields[5] == null ? [] : (fields[5] as List).cast<Tag>(),
+      isInterest: fields[6] == null ? false : fields[6] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Money obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -41,7 +42,9 @@ class MoneyAdapter extends TypeAdapter<Money> {
       ..writeByte(4)
       ..write(obj.value)
       ..writeByte(5)
-      ..write(obj.tagList);
+      ..write(obj.tagList)
+      ..writeByte(6)
+      ..write(obj.isInterest);
   }
 
   @override

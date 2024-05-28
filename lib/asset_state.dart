@@ -9,7 +9,17 @@ class AssetInitState extends AssetState {
 
 class AssetLoadSuccessState extends AssetState {
   final List<Asset> assetList;
-  AssetLoadSuccessState(this.assetList);
+  final Asset? asset;
+  AssetLoadSuccessState(this.assetList, {this.asset});
+}
+
+class IncomeUpdateSuccessState extends AssetState {
+  final Asset asset;
+  IncomeUpdateSuccessState(this.asset);
+}
+
+class AssetSingleDeleteSuccessState extends AssetState {
+  AssetSingleDeleteSuccessState();
 }
 
 class AssetErrorState extends AssetState {

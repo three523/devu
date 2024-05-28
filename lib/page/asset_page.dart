@@ -9,7 +9,6 @@ import 'package:devu_app/page/setup_asset_page.dart';
 import 'package:devu_app/utils/extenstion.dart';
 import 'package:devu_app/widget/asset_card.dart';
 import 'package:devu_app/widget/expandable_page_view.dart';
-import 'package:devu_app/widget/home_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -42,7 +41,22 @@ class _AssetPageState extends State<AssetPage> {
     // TODO: implement build
     return Scaffold(
       body: SafeArea(
-        child: BlocBuilder<AssetBloc, AssetState>(builder: (context, state) {
+        child: BlocBuilder<AssetBloc, AssetState>(
+            //       buildWhen: (previous, current) {
+            //   if (current is SingleAssetLoadSuccessState) {
+            //     return false;
+            //   } else if (current is IncomeUpdateSuccessState) {
+            //     final newAssetIndex = assetList
+            //         .indexWhere((element) => element.id == current.asset.id);
+            //     assetList[newAssetIndex] = current.asset;
+            //     return true;
+            //   } else if (current is AssetLoadSuccessState) {
+            //     assetList = current.assetList;
+            //     return true;
+            //   }
+            //   return false;
+            // },
+            builder: (context, state) {
           return Column(
             children: [
               Padding(
@@ -126,9 +140,10 @@ class _AssetPageState extends State<AssetPage> {
                                       onTap: () {
                                         Navigator.of(context).push(
                                             MaterialPageRoute(
-                                                builder: (context) =>
-                                                    DetailAssetPage(state
-                                                        .assetList[index])));
+                                                builder: (context) {
+                                          return DetailAssetPage(
+                                              state.assetList[index].id);
+                                        }));
                                       },
                                       child: AssetCard(state.assetList[index]),
                                     );
@@ -181,8 +196,8 @@ class _AssetPageState extends State<AssetPage> {
                                   Text('목표자산이 존재하지 않습니다.\n추가하기 버튼을 통해 추가해주세요.'),
                             )
                       : Center(
-                          child: Text('데이터를 가져오지 못했습니다.\n다시 시도해주세요.'),
-                        ))
+                          child: Text('자산을 가져오지 못했습니다..\n다시 시도해주세요.'),
+                        )),
             ],
           );
         }),

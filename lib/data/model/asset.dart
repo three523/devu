@@ -10,6 +10,7 @@ class Asset {
     this.id,
     this.title,
     this.startTimeStamp,
+    this.updateTimeStamp,
     this.goalTimestamp,
     this.goalMoney,
     this.goalRate,
@@ -45,7 +46,10 @@ class Asset {
   @HiveField(8)
   List<Tag> tagList;
 
+  @HiveField(9)
+  int updateTimeStamp;
+
   @override
   String toString() =>
-      '{id: $id, title: $title, startTimeStamp: $startTimeStamp, goalMoney: $goalMoney, goalRate: $goalRate, goalTimestamp: ${goalTimestamp}, assetList: $incomeList, memo: $memo, tagList: $tagList}';
+      '{id: $id, title: $title, startTimeStamp: $startTimeStamp, goalMoney: $goalMoney, goalRate: $goalRate, goalTimestamp: $goalTimestamp, assetList: $incomeList, memo: $memo, tagList: $tagList, updateTimeStamp: $updateTimeStamp}';
 }
