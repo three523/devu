@@ -61,7 +61,7 @@ extension DateTimeExtensions on DateTime {
       );
 
   /// Returns [DateTime] without timestamp.
-  DateTime get withoutTime => DateTime(year, month, day);
+  DateTime get withoutTime => DateTime(year, month, day, hour, minute, second);
 
   /// Compares time of two [DateTime] objects.
   bool hasSameTimeAs(DateTime other) {

@@ -25,7 +25,7 @@ class AssetDetailCard extends StatelessWidget {
             child: Row(
               children: [
                 Text(
-                  '500만원',
+                  '${formatToKoreanNumber(asset.goalMoney)}원',
                   style: TextStyle(
                     fontSize: 16.0,
                     fontWeight: FontWeight.w800,
@@ -204,8 +204,9 @@ class AssetDetailCard extends StatelessWidget {
   }
 
   int totalMoeny() {
-    return asset.incomeList
+    final totalMoeny = asset.incomeList
         .fold(0, (previousValue, element) => previousValue + element.value);
+    return totalMoeny;
   }
 
   int totalPersent() {
@@ -215,7 +216,7 @@ class AssetDetailCard extends StatelessWidget {
     if (totalIncome == 0) {
       return 0;
     }
-    final goalPersent = (goalMoney / totalIncome) * 100;
+    final goalPersent = (totalIncome / goalMoney) * 10000;
     return goalPersent.round() ~/ 100;
   }
 

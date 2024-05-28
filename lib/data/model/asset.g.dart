@@ -20,6 +20,7 @@ class AssetAdapter extends TypeAdapter<Asset> {
       fields[0] as String,
       fields[1] as String,
       fields[2] as int,
+      fields[9] as int,
       fields[5] as int,
       fields[3] as int,
       fields[4] as double,
@@ -32,7 +33,7 @@ class AssetAdapter extends TypeAdapter<Asset> {
   @override
   void write(BinaryWriter writer, Asset obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -50,7 +51,9 @@ class AssetAdapter extends TypeAdapter<Asset> {
       ..writeByte(7)
       ..write(obj.memo)
       ..writeByte(8)
-      ..write(obj.tagList);
+      ..write(obj.tagList)
+      ..writeByte(9)
+      ..write(obj.updateTimeStamp);
   }
 
   @override

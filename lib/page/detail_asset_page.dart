@@ -5,7 +5,6 @@ import 'package:devu_app/data/model/asset.dart';
 import 'package:devu_app/data/model/money.dart';
 import 'package:devu_app/data/model/tag.dart';
 import 'package:devu_app/data/resource.dart';
-import 'package:devu_app/page/add_category_page.dart';
 import 'package:devu_app/page/setup_asset_page.dart';
 import 'package:devu_app/utils/trianglePainter.dart';
 import 'package:devu_app/utils/utils.dart';
@@ -16,11 +15,12 @@ import 'package:devu_app/widget/number_update_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
+import 'package:collection/collection.dart';
 
 class DetailAssetPage extends StatefulWidget {
-  Asset asset;
+  String assetId;
 
-  DetailAssetPage(this.asset);
+  DetailAssetPage(this.assetId);
 
   @override
   State<DetailAssetPage> createState() => _DetailAssetPageState();
@@ -34,95 +34,107 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
   double triangleSize = 12.0;
 
   @override
+  void initState() {
+    super.initState();
+    BlocProvider.of<AssetBloc>(context)
+        .add(LoadAssetEvent(assetId: widget.assetId));
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          icon: Icon(Icons.arrow_back_ios),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: PopupMenuButton(
-              color: Colors.white,
-              popUpAnimationStyle: AnimationStyle.noAnimation,
-              onSelected: (value) {
-                switch (value) {
-                  case MenuType.update:
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SetupAssetPage(
-                          asset: widget.asset,
-                        ),
-                      ),
-                    );
-                  case MenuType.delete:
-                    BlocProvider.of<AssetBloc>(context)
-                        .add(DeleteAssetEvent(widget.asset));
-                    Navigator.pop(context);
-                }
-              },
-              itemBuilder: (BuildContext context) => <PopupMenuEntry<MenuType>>[
-                const PopupMenuItem<MenuType>(
-                  value: MenuType.update,
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.edit,
-                        size: 20,
-                      ),
-                      Text('수정하기'),
-                    ],
-                  ),
-                ),
-                const PopupMenuItem<MenuType>(
-                  value: MenuType.delete,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.delete,
-                        size: 20,
-                        color: Colors.red,
-                      ),
-                      Text(
-                        '삭제하기',
-                        style: TextStyle(color: Colors.red),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-              child: Icon(Icons.menu),
-            ),
+    return BlocBuilder<AssetBloc, AssetState>(builder: (context, state) {
+      return Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            icon: Icon(Icons.arrow_back_ios),
           ),
-        ],
-        title: Text(widget.asset.title),
-      ),
-      body: BlocBuilder<AssetBloc, AssetState>(builder: (context, state) {
-        return Column(
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 16.0),
+              child: PopupMenuButton(
+                color: Colors.white,
+                popUpAnimationStyle: AnimationStyle.noAnimation,
+                onSelected: (value) {
+                  if (state is AssetLoadSuccessState) {
+                    switch (value) {
+                      case MenuType.update:
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                SetupAssetPage(asset: state.asset),
+                          ),
+                        );
+                      case MenuType.delete:
+                        if (state.asset != null) {
+                          BlocProvider.of<AssetBloc>(context)
+                              .add(DeleteAssetEvent(state.asset!));
+                          Navigator.pop(context, true);
+                        }
+                    }
+                  }
+                },
+                itemBuilder: (BuildContext context) =>
+                    <PopupMenuEntry<MenuType>>[
+                  const PopupMenuItem<MenuType>(
+                    value: MenuType.update,
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.edit,
+                          size: 20,
+                        ),
+                        Text('수정하기'),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuItem<MenuType>(
+                    value: MenuType.delete,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.delete,
+                          size: 20,
+                          color: Colors.red,
+                        ),
+                        Text(
+                          '삭제하기',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                child: Icon(Icons.menu),
+              ),
+            ),
+          ],
+          title: Text(
+              state is AssetLoadSuccessState ? state.asset?.title ?? '' : ''),
+        ),
+        body: Column(
           children: [
-            if (state is AssetLoadSuccessState)
+            if (state is AssetLoadSuccessState && state.asset != null)
               Expanded(
                 child: ListView.separated(
-                  itemCount: widget.asset.incomeList.isEmpty
+                  itemCount: state.asset!.incomeList.isEmpty
                       ? 2
-                      : widget.asset.incomeList.length + 1,
+                      : state.asset!.incomeList.length + 1,
                   itemBuilder: (context, index) {
                     if (index == 0) {
-                      return getHeader();
-                    } else if (widget.asset.incomeList.isEmpty) {
+                      return getHeader(state.asset!);
+                    } else if (state.asset!.incomeList.isEmpty) {
                       return Center(
                           child: Text('저축내역이 없습니다\n추가하기 버튼을 눌러 추가해주세요.'));
                     }
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: IncomeCard(
-                        widget.asset.incomeList[index - 1],
+                        state.asset!.incomeList[index - 1],
                         true,
                       ),
                     );
@@ -206,9 +218,9 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
               ),
             )
           ],
-        );
-      }),
-    );
+        ),
+      );
+    });
   }
 
   Widget getTriangle(int persent, String text, Color color, double size) {
@@ -237,12 +249,12 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
     );
   }
 
-  Widget getHeader() {
+  Widget getHeader(Asset asset) {
     return Column(
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 12),
-          child: AssetDetailCard(widget.asset),
+          child: AssetDetailCard(asset),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -256,7 +268,7 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
               ),
               TextButton.icon(
                 onPressed: () {
-                  showAddIncomeDialog(context, setState);
+                  showAddIncomeDialog(context, setState, asset);
                 },
                 icon: Text('추가하기'),
                 label: Icon(
@@ -275,7 +287,8 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
     );
   }
 
-  void showAddIncomeDialog(BuildContext context, Function setState) {
+  void showAddIncomeDialog(
+      BuildContext context, Function setState, Asset asset) {
     List<bool> selectedIncomeTypes = [true, false];
     List<Widget> incomeButton = [Text('저축'), Text('이자')];
     int income = 0;
@@ -387,14 +400,14 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
                         }
                         final money = Money(
                             Uuid().v4(),
-                            selectedIncomeTypes[0] ? '저축' : '수익',
-                            widget.asset.id,
+                            selectedIncomeTypes[0] ? '저축' : '이자',
+                            asset.id,
                             DateTime.now(),
                             income,
                             tagList,
                             isInterest: selectedIncomeTypes[1]);
                         BlocProvider.of<AssetBloc>(context)
-                            .add(CreateIncomeEvent(widget.asset, money));
+                            .add(CreateIncomeEvent(asset, money));
                         Navigator.pop(context);
                       },
                       child: Text(
