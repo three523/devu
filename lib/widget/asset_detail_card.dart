@@ -35,7 +35,7 @@ class AssetDetailCard extends StatelessWidget {
                   width: 8,
                 ),
                 LabelWidget(
-                  "7%",
+                  "${asset.goalRate}%",
                   Colors.green,
                   foregroundColor: Colors.white,
                   padding:

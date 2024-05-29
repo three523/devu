@@ -274,7 +274,6 @@ class _AssetCardState extends State<AssetCard> {
       return 0.0;
     }
     final double rate = interrest / totalMoney * 1000;
-    print('interrest: $interrest, totalMoney: $totalMoney, rate: $rate');
     return rate.round().toDouble() / 10;
   }
 
