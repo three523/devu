@@ -39,14 +39,19 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => TagBloc(TagRepository())),
         BlocProvider(create: (_) => AssetBloc(AssetRepository())),
       ],
-      child: MaterialApp(
-          title: 'Flutter Demo',
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-            useMaterial3: true,
-          ),
-          // home: CalendartPage(ExpenseRepository()));
-          home: NavigationBarPage()),
+      child: GestureDetector(
+        onTap: () {
+          FocusManager.instance.primaryFocus?.unfocus();
+        },
+        child: MaterialApp(
+            title: 'Flutter Demo',
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+              useMaterial3: true,
+            ),
+            // home: CalendartPage(ExpenseRepository()));
+            home: NavigationBarPage()),
+      ),
     );
   }
 }

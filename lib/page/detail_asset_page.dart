@@ -32,6 +32,7 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
   List<Color> gradientColors = [primaryColor, primary200Color];
   double filePercent = 25.0;
   double triangleSize = 12.0;
+  double progressbarPadding = 16.0;
 
   @override
   void initState() {
@@ -42,7 +43,12 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AssetBloc, AssetState>(builder: (context, state) {
+    return BlocBuilder<AssetBloc, AssetState>(buildWhen: (previous, current) {
+      if (current is AssetLoadSuccessState) {
+        return current.asset != null;
+      }
+      return true;
+    }, builder: (context, state) {
       return Scaffold(
         appBar: AppBar(
           leading: IconButton(
@@ -69,11 +75,9 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
                           ),
                         );
                       case MenuType.delete:
-                        if (state.asset != null) {
-                          BlocProvider.of<AssetBloc>(context)
-                              .add(DeleteAssetEvent(state.asset!));
-                          Navigator.pop(context, true);
-                        }
+                        BlocProvider.of<AssetBloc>(context)
+                            .add(DeleteAssetEvent(state.asset!));
+                        Navigator.pop(context, true);
                     }
                   }
                 },
@@ -149,7 +153,8 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
             Container(
               color: secondaryColor,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0), // TODO: progressbar padding 을 변수로 집어넣기
                 child: Column(
                   children: [
                     Padding(
@@ -168,13 +173,13 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
                                     color: Colors.white),
                               ),
                               Text(
-                                '2024.04.11 기준',
+                                '${DateTime.now().year}.${DateTime.now().month}.${DateTime.now().day} 기준',
                                 style: TextStyle(color: Colors.white),
                               )
                             ],
                           ),
                           Text(
-                            '45,000원',
+                            '${state is AssetLoadSuccessState && state.asset != null ? '${formatToKoreanNumber(getInterest(state.asset!.incomeList))}원' : ''}',
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.w900,
@@ -198,17 +203,41 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
                                 gradient: LinearGradient(
                                   colors: gradientColors,
                                   stops: [
-                                    filePercent.round() / 100,
-                                    filePercent.round() / 100,
+                                    state is AssetLoadSuccessState &&
+                                            state.asset != null
+                                        ? getInterestPersent(
+                                                    state.asset!.incomeList,
+                                                    state.asset!.goalRate)
+                                                .toDouble() /
+                                            100
+                                        : 0,
+                                    0.0
                                   ],
                                   begin: Alignment.centerLeft,
                                   end: Alignment.centerRight,
                                 ),
                               ),
                             ),
-                            getTriangle(25, '3.4%', Colors.red, triangleSize),
-                            getTriangle(
-                                70, '7%', Colors.yellowAccent, triangleSize),
+                            state is AssetLoadSuccessState &&
+                                    state.asset != null
+                                ? getTriangle(
+                                    70,
+                                    '${state.asset!.goalRate}%',
+                                    Colors.yellow,
+                                    triangleSize,
+                                  )
+                                : getTriangle(
+                                    0, '0.0%', Colors.yellow, triangleSize),
+                            state is AssetLoadSuccessState &&
+                                    state.asset != null
+                                ? getTriangle(
+                                    getInterestPersent(state.asset!.incomeList,
+                                        state.asset!.goalRate),
+                                    '${getInterestRate(state.asset!.incomeList)}%',
+                                    Colors.red,
+                                    triangleSize)
+                                : getTriangle(
+                                    0, '0.0%', Colors.red, triangleSize),
                           ],
                         ),
                       ),
@@ -226,7 +255,9 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
   Widget getTriangle(int persent, String text, Color color, double size) {
     return Positioned(
       bottom: 5,
-      left: MediaQuery.of(context).size.width * (persent / 100) - size - 1,
+      left: (MediaQuery.of(context).size.width - (progressbarPadding * 2) + 8) *
+              (persent / 100) -
+          size,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
@@ -425,5 +456,44 @@ class _DetailAssetPageState extends State<DetailAssetPage> {
         });
       },
     );
+  }
+
+  int getInterest(List<Money> incomeList) {
+    return incomeList.fold(
+        0,
+        (previousValue, element) =>
+            previousValue + (element.isInterest ? element.value : 0));
+  }
+
+  double getInterestRate(List<Money> incomeList) {
+    final interrest = getInterest(incomeList).toDouble();
+    final totalMoney = getTotalMoney(incomeList).toDouble();
+    if (interrest == 0 || totalMoney == 0) {
+      return 0.0;
+    }
+    final double rate = interrest / totalMoney * 1000;
+    return rate.round().toDouble() / 10;
+  }
+
+  int getInterestPersent(List<Money> incomeList, double goalRate) {
+    final interrest = getInterestRate(incomeList).toDouble();
+    if (interrest == 0) {
+      return 0;
+    } else if (goalRate == 0) {
+      return 100;
+    }
+    final doublePersent = calculateDisplayRate(interrest, goalRate);
+    print(doublePersent.round());
+    return doublePersent.round();
+  }
+
+  int getTotalMoney(List<Money> incomeList) {
+    return incomeList.fold(
+        0, (previousValue, element) => previousValue + element.value);
+  }
+
+  double calculateDisplayRate(double currentRate, double targetRate) {
+    double achievementRate = (currentRate / targetRate) * 70;
+    return achievementRate > 100 ? 100 : achievementRate;
   }
 }
