@@ -35,6 +35,7 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         leading: IconButton(
             onPressed: () {
@@ -218,37 +219,10 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
     );
   }
 
-  // Widget categoryColor(int index, Function setState) {
-  //   return Padding(
-  //     padding: const EdgeInsets.symmetric(horizontal: 12.0),
-  //     child: GestureDetector(
-  //       onTap: () {
-  //         setState(() {
-  //           isSelectedColor = categoryColorList[index];
-  //         });
-  //       },
-  //       child: Container(
-  //         width: 30,
-  //         height: 30,
-  //         decoration: BoxDecoration(
-  //           border: isSelectedColor == categoryColorList[index]
-  //               ? Border.all(
-  //                   color: Colors.black,
-  //                   width: 1,
-  //                 )
-  //               : null,
-  //           borderRadius: BorderRadius.circular(15),
-  //           color: categoryColorList[index],
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  void updatePrice(ExpenseCategory? category, int addPrice) {
+  void updatePrice(ExpenseCategory? category, int price) {
     setState(() {
       if (category != null) {
-        category.belowMoeny += addPrice;
+        category.belowMoeny = price;
         BlocProvider.of<ExpenseBloc>(context)
             .add(UpdateCategoryEvent(category));
       }

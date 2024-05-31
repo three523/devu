@@ -43,7 +43,7 @@ class _SetupAssetPageState extends State<SetupAssetPage> {
               Navigator.of(context).pop();
             },
             icon: Icon(Icons.arrow_back_ios)),
-        title: Text('지출 예산 설정하기'),
+        title: Text('예산 설정하기'),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),

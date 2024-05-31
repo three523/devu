@@ -127,11 +127,11 @@ class _CategoryCardState extends State<CategoryCard> {
                             onPressed: () {
                               setState(() {
                                 if (price < 10000) {
-                                  updatePrice(-price);
                                   price = 0;
+                                  updatePrice(-price);
                                 } else {
-                                  updatePrice(-10000);
                                   price -= 10000;
+                                  updatePrice(price);
                                 }
                                 priceController.text = price.toPriceString();
                               });
@@ -154,12 +154,12 @@ class _CategoryCardState extends State<CategoryCard> {
                                 if (value.isEmpty) {
                                   previousPrice = price;
                                   price = 0;
-                                  updatePrice(0 - price);
+                                  updatePrice(price);
                                 } else {
                                   int newPrice = value.toPrice() ?? price;
                                   previousPrice = price;
                                   price = newPrice;
-                                  updatePrice(newPrice - price);
+                                  updatePrice(newPrice);
                                 }
                                 priceController.text = price.toPriceString();
                               });
@@ -176,7 +176,7 @@ class _CategoryCardState extends State<CategoryCard> {
                               setState(() {
                                 price += 10000;
 
-                                updatePrice(10000);
+                                updatePrice(price);
                                 priceController.text = price.toPriceString();
                               });
                             },
@@ -204,9 +204,9 @@ class _CategoryCardState extends State<CategoryCard> {
     );
   }
 
-  void updatePrice(int addPrice) {
+  void updatePrice(int price) {
     if (widget.updatePrice != null) {
-      widget.updatePrice!(widget.category, addPrice);
+      widget.updatePrice!(widget.category, price);
     }
   }
 
@@ -232,6 +232,9 @@ class _CategoryCardState extends State<CategoryCard> {
       final leftMoney = category.belowMoeny + usedMoney;
       if (leftMoney <= 0) {
         return 0;
+      }
+      if (remainigDays <= 0) {
+        return leftMoney;
       }
       return (leftMoney / remainigDays).floor();
     }
