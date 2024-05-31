@@ -41,22 +41,7 @@ class _AssetPageState extends State<AssetPage> {
     // TODO: implement build
     return Scaffold(
       body: SafeArea(
-        child: BlocBuilder<AssetBloc, AssetState>(
-            //       buildWhen: (previous, current) {
-            //   if (current is SingleAssetLoadSuccessState) {
-            //     return false;
-            //   } else if (current is IncomeUpdateSuccessState) {
-            //     final newAssetIndex = assetList
-            //         .indexWhere((element) => element.id == current.asset.id);
-            //     assetList[newAssetIndex] = current.asset;
-            //     return true;
-            //   } else if (current is AssetLoadSuccessState) {
-            //     assetList = current.assetList;
-            //     return true;
-            //   }
-            //   return false;
-            // },
-            builder: (context, state) {
+        child: BlocBuilder<AssetBloc, AssetState>(builder: (context, state) {
           return Column(
             children: [
               Padding(
