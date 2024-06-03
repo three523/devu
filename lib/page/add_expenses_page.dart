@@ -9,6 +9,7 @@ import 'package:devu_app/utils/extenstion.dart';
 import 'package:devu_app/utils/utils.dart';
 import 'package:devu_app/widget/label_selector_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
 
@@ -25,19 +26,22 @@ class AddExpensesPage extends StatefulWidget {
   State<AddExpensesPage> createState() => _AddExpensesPageState();
 }
 
-class _AddExpensesPageState extends State<AddExpensesPage> {
+class _AddExpensesPageState extends State<AddExpensesPage>
+    with WidgetsBindingObserver {
   final isSelected = <bool>[true, false];
   List<Tag> tagList = [];
   TextEditingController priceController = TextEditingController(text: '0');
   TextEditingController memoController = TextEditingController();
   int price = 0;
-  double bottomInset = 0.0;
+  final ScrollController _scrollController = ScrollController();
+  final FocusNode _memoFocusNode = FocusNode();
+  final GlobalKey _saveButtonKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
-    bottomInset = MediaQuery.of(context).viewInsets.bottom;
     // TODO: implement build
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         leading: IconButton(
             onPressed: () {
@@ -46,174 +50,243 @@ class _AddExpensesPageState extends State<AddExpensesPage> {
             icon: Icon(Icons.arrow_back_ios)),
         title: Text('기록 하기'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      body: SafeArea(
+        child: Stack(
           children: [
-            ToggleButtons(
-              borderRadius: BorderRadius.circular(4.0),
-              constraints: BoxConstraints(
-                  minHeight: 20, minWidth: 60, maxHeight: 34, maxWidth: 60),
-              children: [
-                Center(child: Text('지출')),
-                Center(child: Text('수입')),
-              ],
-              onPressed: (index) {
-                setState(() {
-                  for (int buttonIndex = 0;
-                      buttonIndex < isSelected.length;
-                      buttonIndex++) {
-                    if (buttonIndex == index) {
-                      isSelected[buttonIndex] = true;
-                    } else {
-                      isSelected[buttonIndex] = false;
-                    }
-                  }
-                });
-              },
-              color: primaryColor,
-              borderColor: primaryColor,
-              selectedBorderColor: primaryColor,
-              fillColor: primaryColor,
-              selectedColor: Colors.white,
-              isSelected: isSelected,
-            ),
-            SizedBox(
-              height: 24,
-            ),
-            isExpenses()
-                ? Text(
-                    '얼마를 썼나요?',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  )
-                : Text(
-                    '얼마를 더할까요?',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-            Row(
-              children: [Spacer(), Text("${formatToKoreanNumber(price)}원")],
-            ),
-            SizedBox(
-              height: 8,
-            ),
-            Container(
-              width: double.infinity,
-              height: 110,
-              decoration: BoxDecoration(
-                  border: Border.all(color: primaryColor, width: 2),
-                  borderRadius: BorderRadius.circular(12.0)),
-              child: Center(
-                child: TextField(
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                  ),
-                  style: TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  controller: priceController,
-                  onChanged: (value) {
-                    setState(() {
-                      if (value.isEmpty) {
-                        price = 0;
-                      } else {
-                        price = value.toPrice() ?? price;
-                      }
-                      priceController.text = price.toPriceString();
-                    });
-                  },
-                  keyboardType: TextInputType.number,
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 32,
-            ),
-            Text(
-              '카테고리를 설정해주세요',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-              child: SizedBox(
-                width: double.infinity,
+            SingleChildScrollView(
+              controller: _scrollController,
+              padding: EdgeInsets.only(bottom: getPadding(context)),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          backgroundColor: Color.fromARGB(255, 91, 148, 168),
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8))),
-                      onPressed: () {
-                        final state =
-                            BlocProvider.of<ExpenseBloc>(context).state;
-                        if (state is ExpenseSucessState) {
-                          final categoryList = state.eventModel.categoryList;
-                          showCategorySelectDialog(context, categoryList);
-                        }
+                    ToggleButtons(
+                      borderRadius: BorderRadius.circular(4.0),
+                      constraints: BoxConstraints(
+                          minHeight: 20,
+                          minWidth: 60,
+                          maxHeight: 34,
+                          maxWidth: 60),
+                      children: [
+                        Center(child: Text('지출')),
+                        Center(child: Text('수입')),
+                      ],
+                      onPressed: (index) {
+                        setState(() {
+                          for (int buttonIndex = 0;
+                              buttonIndex < isSelected.length;
+                              buttonIndex++) {
+                            if (buttonIndex == index) {
+                              isSelected[buttonIndex] = true;
+                            } else {
+                              isSelected[buttonIndex] = false;
+                            }
+                          }
+                        });
                       },
-                      child: Text(widget.expenseCategory?.title ?? ''),
+                      color: primaryColor,
+                      borderColor: primaryColor,
+                      selectedBorderColor: primaryColor,
+                      fillColor: primaryColor,
+                      selectedColor: Colors.white,
+                      isSelected: isSelected,
                     ),
-                    isOutOfExpenses() == null
-                        ? Container()
+                    SizedBox(
+                      height: 24,
+                    ),
+                    isExpenses()
+                        ? Text(
+                            '얼마를 썼나요?',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w600),
+                          )
                         : Text(
-                            '예산을 ${isOutOfExpenses()}원 초과했어요',
-                            style: TextStyle(color: Colors.red),
+                            '얼마를 더할까요?',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w600),
                           ),
+                    Row(
+                      children: [
+                        Spacer(),
+                        Text("${formatToKoreanNumber(price)}원")
+                      ],
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Container(
+                      width: double.infinity,
+                      height: 110,
+                      decoration: BoxDecoration(
+                          border: Border.all(color: primaryColor, width: 2),
+                          borderRadius: BorderRadius.circular(12.0)),
+                      child: Center(
+                        child: TextField(
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                          ),
+                          style: TextStyle(
+                            fontSize: 40,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          controller: priceController,
+                          onChanged: (value) {
+                            setState(() {
+                              if (value.isEmpty) {
+                                price = 0;
+                              } else {
+                                price = value.toPrice() ?? price;
+                              }
+                              priceController.text = price.toPriceString();
+                            });
+                          },
+                          keyboardType: TextInputType.number,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 32,
+                    ),
+                    Text(
+                      '카테고리를 설정해주세요',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12.0, vertical: 8.0),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  foregroundColor: Colors.white,
+                                  backgroundColor:
+                                      Color.fromARGB(255, 91, 148, 168),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 4),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8))),
+                              onPressed: () {
+                                final state =
+                                    BlocProvider.of<ExpenseBloc>(context).state;
+                                if (state is ExpenseSucessState) {
+                                  final categoryList =
+                                      state.eventModel.categoryList;
+                                  showCategorySelectDialog(
+                                      context, categoryList);
+                                }
+                              },
+                              child: Text(widget.expenseCategory?.title ?? ''),
+                            ),
+                            isOutOfExpenses() == null
+                                ? Container()
+                                : Text(
+                                    '예산을 ${isOutOfExpenses()}원 초과했어요',
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 30.0,
+                    ),
+                    Text(
+                      '라벨를 설정해주세요',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    LabelSelectorWidget(
+                      selectedList: tagList,
+                      onSelecteds: (newTagList) {
+                        tagList = newTagList;
+                      },
+                    ),
+                    SizedBox(
+                      height: 30.0,
+                    ),
+                    Text(
+                      '메모를 작성해주세요',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Container(
+                      width: double.infinity,
+                      height: 110,
+                      decoration: BoxDecoration(
+                          border: Border.all(width: 0.5),
+                          borderRadius: BorderRadius.circular(8.0)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Center(
+                          child: TextField(
+                            focusNode: _memoFocusNode,
+                            controller: memoController,
+                            maxLines: null,
+                            decoration: InputDecoration.collapsed(
+                              hintText: '기록에 표시될 상세 내용을 작성해주세요.',
+                            ),
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
             ),
-            SizedBox(
-              height: 30.0,
-            ),
-            Text(
-              '라벨를 설정해주세요',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-            SizedBox(
-              height: 8,
-            ),
-            LabelSelectorWidget(
-              selectedList: tagList,
-              onSelecteds: (newTagList) {
-                tagList = newTagList;
-              },
-            ),
-            SizedBox(
-              height: 30.0,
-            ),
-            Text(
-              '메모를 작성해주세요',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-            SizedBox(
-              height: 8,
-            ),
-            Container(
-              width: double.infinity,
-              height: 110,
-              decoration: BoxDecoration(
-                  border: Border.all(width: 0.5),
-                  borderRadius: BorderRadius.circular(8.0)),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Center(
-                  child: TextField(
-                    controller: memoController,
-                    maxLines: null,
-                    decoration: InputDecoration.collapsed(
-                      hintText: '기록에 표시될 상세 내용을 작성해주세요.',
+            Positioned(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  color: primaryColor,
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    key: _saveButtonKey,
+                    style:
+                        ElevatedButton.styleFrom(backgroundColor: primaryColor),
+                    onPressed: () {
+                      int price = priceController.text.toPrice() ?? 0;
+                      if (price <= 0) {
+                        return;
+                      }
+                      price = isExpenses() ? -price : price;
+                      final category = widget.expenseCategory;
+                      if (category != null && validateTextToPrice()) {
+                        BlocProvider.of<ExpenseBloc>(context).add(
+                            CreateExpenseEvent(
+                                category,
+                                Money(
+                                    Uuid().v4().toString(),
+                                    memoController.text,
+                                    category.id,
+                                    DateTime.now(),
+                                    price,
+                                    tagList)));
+                        Navigator.of(context).pop();
+                      } else {
+                        //TODO: 카테고리 선택 된 경우 에러처리
+                      }
+                    },
+                    child: Text(
+                      '저장하기',
+                      style: TextStyle(
+                        color: getTextColorForBackground(primaryColor),
+                      ),
                     ),
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
@@ -221,33 +294,51 @@ class _AddExpensesPageState extends State<AddExpensesPage> {
           ],
         ),
       ),
-      resizeToAvoidBottomInset: false,
-      bottomSheet: SafeArea(
-        child: Container(
-          width: double.infinity,
-          child: ElevatedButton(
-            onPressed: () {
-              int price = priceController.text.toPrice() ?? 0;
-              if (price <= 0) {
-                return;
-              }
-              price = isExpenses() ? -price : price;
-              final category = widget.expenseCategory;
-              if (category != null && validateTextToPrice()) {
-                BlocProvider.of<ExpenseBloc>(context).add(CreateExpenseEvent(
-                    category,
-                    Money(Uuid().v4().toString(), memoController.text,
-                        category.id, DateTime.now(), price, tagList)));
-                Navigator.of(context).pop();
-              } else {
-                //TODO: 카테고리 선택 된 경우 에러처리
-              }
-            },
-            child: Text('저장하기'),
-          ),
-        ),
-      ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    if (bottomInset > 0 && _memoFocusNode.hasFocus) {
+      scrollToBottom();
+    }
+  }
+
+  void scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      print('scrollToBottom');
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+    });
+  }
+
+  double getPadding(BuildContext context) {
+    double bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    double padding = 12;
+    if (bottomInset == 0) {
+      return 0;
+    }
+    if (_saveButtonKey.currentContext != null) {
+      final renderBox =
+          _saveButtonKey.currentContext!.findRenderObject() as RenderBox;
+      double height = renderBox.size.height;
+      padding += height;
+    }
+    return padding;
   }
 
   bool isExpenses() {

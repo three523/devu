@@ -47,94 +47,98 @@ class _AddLabelPageState extends State<AddLabelPage> {
       appBar: AppBar(
         title: Text('태그 업데이트'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Wrap(
-              direction: Axis.horizontal,
-              alignment: WrapAlignment.start,
-              spacing: 8.0,
-              runSpacing: 4.0,
-              children: [
-                for (int i = 0; i < widget.labelList.length; i++)
-                  getLabelWidget(i)
-              ],
-            ),
-            SizedBox(
-              height: 16.0,
-            ),
-            Text(
-              '레이블 이름 입력',
-              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16.0),
-            ),
-            SizedBox(
-              height: 12.0,
-            ),
-            TextField(
-              controller: textEditingController,
-              maxLength: 10,
-              decoration: InputDecoration(
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(width: 1.0),
+      resizeToAvoidBottomInset: true,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Wrap(
+                direction: Axis.horizontal,
+                alignment: WrapAlignment.start,
+                spacing: 8.0,
+                runSpacing: 8.0,
+                children: [
+                  for (int i = 0; i < widget.labelList.length; i++)
+                    getLabelWidget(i)
+                ],
+              ),
+              SizedBox(
+                height: 16.0,
+              ),
+              Text(
+                '레이블 이름 입력',
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16.0),
+              ),
+              SizedBox(
+                height: 12.0,
+              ),
+              TextField(
+                controller: textEditingController,
+                maxLength: 10,
+                decoration: InputDecoration(
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(width: 1.0),
+                  ),
                 ),
               ),
-            ),
-            SizedBox(
-              height: 24.0,
-            ),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  for (int i = 0; i < colorList.length; i++)
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: SizedBox(
-                        height: 50,
-                        width: 50,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              selectedColor = colorList[i];
-                            });
-                          },
-                          child: selectedColor != null &&
-                                  selectedColor! == colorList[i]
-                              ? Icon(
-                                  Icons.check,
-                                  color:
-                                      getTextColorForBackground(colorList[i]),
-                                )
-                              : null,
-                          style: ButtonStyle(
-                            padding: MaterialStateProperty.all(EdgeInsets.zero),
-                            backgroundColor:
-                                MaterialStateProperty.all(colorList[i]),
-                            shape: MaterialStateProperty.all(
-                              CircleBorder(),
+              SizedBox(
+                height: 24.0,
+              ),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    for (int i = 0; i < colorList.length; i++)
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: SizedBox(
+                          height: 50,
+                          width: 50,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                selectedColor = colorList[i];
+                              });
+                            },
+                            child: selectedColor != null &&
+                                    selectedColor! == colorList[i]
+                                ? Icon(
+                                    Icons.check,
+                                    color:
+                                        getTextColorForBackground(colorList[i]),
+                                  )
+                                : null,
+                            style: ButtonStyle(
+                              padding:
+                                  MaterialStateProperty.all(EdgeInsets.zero),
+                              backgroundColor:
+                                  MaterialStateProperty.all(colorList[i]),
+                              shape: MaterialStateProperty.all(
+                                CircleBorder(),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            SizedBox(
-              height: 24.0,
-            ),
-            SizedBox(
-              width: double.infinity,
-              child: DefaultButton(
-                '추가하기',
-                addLabel,
+              SizedBox(
+                height: 24.0,
               ),
-            )
-          ],
+              SizedBox(
+                width: double.infinity,
+                child: DefaultButton(
+                  '추가하기',
+                  addLabel,
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
